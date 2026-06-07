@@ -7,15 +7,17 @@ import type { PointAction, Profile, PointTransaction } from '@/lib/types'
 export default async function AdminPage() {
   const supabase = await createClient()
 
-  const { data: { user } } = await supabase.auth.getUser()
+  const { data: { user }, error: authError } = await supabase.auth.getUser()
+  if (authError) throw new Error(`Auth error: ${authError.message}`)
   if (!user) redirect('/login')
 
-  const { data: profile } = await supabase
+  const { data: profile, error: profileError } = await supabase
     .from('profiles')
     .select('*')
     .eq('id', user.id)
     .single()
 
+  if (profileError) throw new Error(`Profile error: ${profileError.message}`)
   if (!profile || profile.role !== 'admin') redirect('/')
 
   const { data: actions } = await supabase
