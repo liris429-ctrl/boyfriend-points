@@ -44,3 +44,30 @@ export interface Redemption {
   points_spent: number
   created_at: string
 }
+
+export interface RewardWish {
+  id: string
+  user_id: string
+  title: string
+  emoji: string
+  reason: string | null
+  status: 'pending' | 'approved' | 'rejected'
+  admin_reply: string | null
+  created_at: string
+  profiles?: { display_name: string } | null
+}
+
+export interface PointRequest {
+  id: string
+  user_id: string
+  title: string
+  points_suggested: number | null
+  reason: string | null
+  status: 'pending' | 'approved' | 'rejected'
+  admin_reply: string | null
+  awarded_points: number | null
+  reviewed_by: string | null
+  reviewed_at: string | null
+  created_at: string
+  profiles?: { display_name: string } | null
+}

@@ -1,0 +1,175 @@
+'use client'
+
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { createClient } from '@/lib/supabase/client'
+import type { PointRequest } from '@/lib/types'
+
+const STATUS_LABEL: Record<string, { label: string; color: string }> = {
+  pending:  { label: '審核中', color: 'text-amber-500 bg-amber-50 border-amber-200' },
+  approved: { label: '已核准', color: 'text-green-600 bg-green-50 border-green-200' },
+  rejected: { label: '未通過', color: 'text-gray-400 bg-gray-50 border-gray-200' },
+}
+
+interface Props {
+  requests: PointRequest[]
+  userId: string
+}
+
+export default function RequestPointsClient({ requests, userId }: Props) {
+  const router = useRouter()
+  const supabase = createClient()
+
+  const [title, setTitle] = useState('')
+  const [pointsSuggested, setPointsSuggested] = useState('')
+  const [reason, setReason] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [submitted, setSubmitted] = useState(false)
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    if (!title.trim()) return
+    setLoading(true)
+
+    const pts = parseInt(pointsSuggested)
+    const { error } = await supabase.from('point_requests').insert({
+      user_id: userId,
+      title: title.trim(),
+      points_suggested: pts > 0 ? pts : null,
+      reason: reason.trim() || null,
+    })
+
+    setLoading(false)
+    if (!error) {
+      setSubmitted(true)
+      setTitle('')
+      setPointsSuggested('')
+      setReason('')
+      setTimeout(() => {
+        setSubmitted(false)
+        router.refresh()
+      }, 1500)
+    }
+  }
+
+  return (
+    <div className="space-y-5">
+      {/* Submit form */}
+      <div className="bg-white rounded-2xl border border-pink-100 p-4">
+        <h2 className="font-semibold text-pink-700 mb-3 flex items-center gap-1.5">
+          <span>🙋</span> 申請一筆積分
+        </h2>
+        <form onSubmit={handleSubmit} className="space-y-3">
+          <div>
+            <label className="block text-xs text-pink-400 mb-1">我做了什麼好事 *</label>
+            <input
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              maxLength={50}
+              required
+              className="w-full px-3 py-2 rounded-xl border border-pink-200 text-sm focus:outline-none focus:border-pink-400"
+              placeholder="例：幫忙洗碗"
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs text-pink-400 mb-1">建議分數（選填）</label>
+            <div className="relative">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-pink-400 text-sm">+</span>
+              <input
+                type="number"
+                value={pointsSuggested}
+                onChange={(e) => setPointsSuggested(e.target.value)}
+                min="1"
+                max="999"
+                className="w-full pl-7 pr-3 py-2 rounded-xl border border-pink-200 text-sm focus:outline-none focus:border-pink-400"
+                placeholder="10"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-xs text-pink-400 mb-1">補充說明（選填）</label>
+            <input
+              type="text"
+              value={reason}
+              onChange={(e) => setReason(e.target.value)}
+              maxLength={80}
+              className="w-full px-3 py-2 rounded-xl border border-pink-200 text-sm focus:outline-none focus:border-pink-400"
+              placeholder="我覺得這樣算很努力了..."
+            />
+          </div>
+
+          {submitted && (
+            <div className="bg-green-50 border border-green-200 rounded-xl p-2.5 text-center">
+              <p className="text-green-600 text-sm font-medium">✅ 申請送出！等女友審核</p>
+            </div>
+          )}
+
+          <button
+            type="submit"
+            disabled={!title.trim() || loading || submitted}
+            className="w-full py-2.5 rounded-xl bg-pink-500 text-white font-semibold text-sm hover:bg-pink-600 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {loading ? '送出中...' : '送出申請 🙋'}
+          </button>
+        </form>
+      </div>
+
+      {/* Request list */}
+      <div>
+        <h2 className="font-semibold text-pink-700 mb-3 flex items-center gap-1.5">
+          <span>📜</span> 我的申請紀錄
+        </h2>
+
+        {requests.length === 0 ? (
+          <div className="bg-white rounded-2xl border border-pink-100 p-8 text-center text-pink-300">
+            <div className="text-4xl mb-2">🌸</div>
+            <p className="text-sm">還沒有申請紀錄</p>
+          </div>
+        ) : (
+          <div className="space-y-2">
+            {requests.map((req) => {
+              const st = STATUS_LABEL[req.status] ?? STATUS_LABEL.pending
+              return (
+                <div key={req.id} className="bg-white rounded-2xl border border-pink-100 p-4">
+                  <div className="flex items-start gap-3">
+                    <div className="text-2xl mt-0.5">🙋</div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <p className="font-medium text-sm text-gray-700">{req.title}</p>
+                        <span className={`text-xs px-2 py-0.5 rounded-full border font-medium ${st.color}`}>
+                          {st.label}
+                        </span>
+                      </div>
+
+                      <div className="flex items-center gap-3 mt-0.5 text-xs text-gray-400">
+                        {req.points_suggested && (
+                          <span>建議 +{req.points_suggested} 分</span>
+                        )}
+                        {req.awarded_points && req.status === 'approved' && (
+                          <span className="text-green-600 font-medium">實際 +{req.awarded_points} 分</span>
+                        )}
+                      </div>
+
+                      {req.reason && <p className="text-xs text-gray-400 mt-0.5">{req.reason}</p>}
+                      {req.admin_reply && (
+                        <p className="text-xs text-pink-500 mt-1 italic">💬 {req.admin_reply}</p>
+                      )}
+                      <p className="text-xs text-pink-300 mt-1">
+                        {new Date(req.created_at).toLocaleDateString('zh-TW', {
+                          month: 'long', day: 'numeric',
+                        })}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}

@@ -37,9 +37,21 @@ export default async function AdminPage() {
     .order('created_at', { ascending: false })
     .limit(8)
 
+  const { count: pendingRequestCount } = await supabase
+    .from('point_requests')
+    .select('*', { count: 'exact', head: true })
+    .eq('status', 'pending')
+
+  const { count: pendingWishCount } = await supabase
+    .from('reward_wishes')
+    .select('*', { count: 'exact', head: true })
+    .eq('status', 'pending')
+
+  const pendingCount = (pendingRequestCount ?? 0) + (pendingWishCount ?? 0)
+
   return (
     <div className="min-h-screen flex flex-col">
-      <Navbar role={profile.role} displayName={profile.display_name} />
+      <Navbar role={profile.role} displayName={profile.display_name} pendingCount={pendingCount} />
 
       <main className="flex-1 max-w-lg mx-auto w-full p-4 space-y-5">
         <div className="mt-2">

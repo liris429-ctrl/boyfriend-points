@@ -78,10 +78,10 @@ export default async function HistoryPage() {
                     key={`tx-${tx.id}`}
                     className="bg-white rounded-2xl border border-pink-100 p-4 flex items-center gap-3"
                   >
-                    <div className="text-2xl">{tx.point_actions?.emoji ?? '⭐'}</div>
+                    <div className="text-2xl">{tx.points < 0 ? '📉' : (tx.point_actions?.emoji ?? '⭐')}</div>
                     <div className="flex-1 min-w-0">
                       <p className="font-medium text-sm text-gray-700 truncate">
-                        {tx.point_actions?.title ?? '手動給分'}
+                        {tx.points < 0 ? '扣點' : (tx.point_actions?.title ?? '手動給分')}
                       </p>
                       {tx.note && <p className="text-xs text-gray-400 truncate">{tx.note}</p>}
                       {isAdmin && (
@@ -94,7 +94,9 @@ export default async function HistoryPage() {
                         })}
                       </p>
                     </div>
-                    <div className="text-green-500 font-bold">+{tx.points}</div>
+                    <div className={`font-bold ${tx.points >= 0 ? 'text-green-500' : 'text-rose-400'}`}>
+                      {tx.points >= 0 ? `+${tx.points}` : tx.points}
+                    </div>
                   </div>
                 )
               } else {
