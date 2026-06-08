@@ -20,6 +20,12 @@ interface ShareResult {
   message: string
 }
 
+interface DeductResult {
+  userName: string
+  amount: number
+  reason: string
+}
+
 function getTodaySpecialDate(dates: SpecialDate[] = []) {
   const today = new Date()
   const mm = String(today.getMonth() + 1).padStart(2, '0')
@@ -48,11 +54,12 @@ export default function AwardPointsForm({ actions, users, adminId, specialDates 
   // Deduct mode
   const [deductAmount, setDeductAmount] = useState('')
   const [deductReason, setDeductReason] = useState('')
-  const [deductSuccess, setDeductSuccess] = useState(false)
+  const [deductResult, setDeductResult] = useState<DeductResult | null>(null)
 
   const [loading, setLoading] = useState(false)
   const [shareResult, setShareResult] = useState<ShareResult | null>(null)
   const [copied, setCopied] = useState(false)
+  const [deductCopied, setDeductCopied] = useState(false)
 
   const selectedUser = users.find((u) => u.id === selectedUserId)
 
@@ -103,13 +110,14 @@ export default function AwardPointsForm({ actions, users, adminId, specialDates 
 
     setLoading(false)
     if (!error) {
-      setDeductSuccess(true)
+      setDeductResult({
+        userName: selectedUser?.display_name ?? '男友',
+        amount,
+        reason: deductReason.trim(),
+      })
       setDeductAmount('')
       setDeductReason('')
-      setTimeout(() => {
-        setDeductSuccess(false)
-        router.refresh()
-      }, 2000)
+      router.refresh()
     }
   }
 
@@ -128,6 +136,22 @@ export default function AwardPointsForm({ actions, users, adminId, specialDates 
     await navigator.clipboard.writeText(buildShareText())
     setCopied(true)
     setTimeout(() => setCopied(false), 2500)
+  }
+
+  function buildDeductText() {
+    if (!deductResult) return ''
+    return [
+      `📉 ${deductResult.userName} 被扣了 ${deductResult.amount} 分`,
+      `原因：${deductResult.reason}`,
+      `快來登入看看餘額吧！`,
+      `要乖一點喔 💕`,
+    ].join('\n')
+  }
+
+  async function copyDeductText() {
+    await navigator.clipboard.writeText(buildDeductText())
+    setDeductCopied(true)
+    setTimeout(() => setDeductCopied(false), 2500)
   }
 
   return (
@@ -161,6 +185,42 @@ export default function AwardPointsForm({ actions, users, adminId, specialDates 
             <button
               onClick={() => { setShareResult(null); setCopied(false) }}
               className="w-full mt-2 py-2 rounded-xl border border-pink-200 text-pink-500 text-sm hover:bg-pink-50 transition"
+            >
+              關閉
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Deduct notification modal */}
+      {deductResult && (
+        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-3xl p-6 max-w-xs w-full text-center shadow-xl">
+            <div className="text-5xl mb-2">📉</div>
+            <h3 className="font-bold text-gray-700 text-lg">已扣除積分</h3>
+            <p className="text-rose-500 mt-1">
+              −{deductResult.amount} 分 → {deductResult.userName}
+            </p>
+
+            <div className="mt-4 bg-rose-50 rounded-2xl p-3 text-left">
+              <p className="text-xs text-rose-500 font-medium mb-2">📋 複製以下文字通知男友：</p>
+              <pre className="text-xs text-gray-600 whitespace-pre-wrap font-sans leading-5">
+                {buildDeductText()}
+              </pre>
+            </div>
+
+            <button
+              onClick={copyDeductText}
+              className={`w-full mt-3 py-2.5 rounded-xl font-semibold text-sm transition ${
+                deductCopied ? 'bg-green-500 text-white' : 'bg-rose-500 text-white hover:bg-rose-600'
+              }`}
+            >
+              {deductCopied ? '✅ 已複製！' : '複製文字'}
+            </button>
+
+            <button
+              onClick={() => { setDeductResult(null); setDeductCopied(false) }}
+              className="w-full mt-2 py-2 rounded-xl border border-rose-200 text-rose-500 text-sm hover:bg-rose-50 transition"
             >
               關閉
             </button>
@@ -313,22 +373,12 @@ export default function AwardPointsForm({ actions, users, adminId, specialDates 
                 />
               </div>
 
-              {deductSuccess && (
-                <div className="bg-green-50 border border-green-200 rounded-xl p-3 text-center">
-                  <p className="text-green-600 text-sm font-medium">✅ 已扣除積分</p>
-                </div>
-              )}
-
               <button
                 type="submit"
-                disabled={!deductAmount || !deductReason.trim() || loading || deductSuccess}
+                disabled={!deductAmount || !deductReason.trim() || loading}
                 className="w-full py-3 rounded-xl bg-rose-500 text-white font-semibold hover:bg-rose-600 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {loading
-                  ? '處理中...'
-                  : deductSuccess
-                  ? '✅ 已扣點'
-                  : `扣除 ${deductAmount || '?'} 積分 📉`}
+                {loading ? '處理中...' : `扣除 ${deductAmount || '?'} 積分 📉`}
               </button>
             </form>
           )}

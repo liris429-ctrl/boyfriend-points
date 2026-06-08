@@ -15,14 +15,12 @@ export default async function MarqueeBar() {
     supabase
       .from('point_transactions')
       .select('points, note, point_actions(title, emoji)')
-      .eq('user_id', user.id)
       .gt('points', 0)
       .order('created_at', { ascending: false })
       .limit(4),
     supabase
       .from('redemptions')
       .select('reward_title, reward_emoji')
-      .eq('user_id', user.id)
       .order('created_at', { ascending: false })
       .limit(2),
   ])
