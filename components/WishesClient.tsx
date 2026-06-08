@@ -25,11 +25,13 @@ export default function WishesClient({ wishes, userId }: Props) {
   const [reason, setReason] = useState('')
   const [loading, setLoading] = useState(false)
   const [submitted, setSubmitted] = useState(false)
+  const [errorMsg, setErrorMsg] = useState<string | null>(null)
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!title.trim()) return
     setLoading(true)
+    setErrorMsg(null)
 
     const { error } = await supabase.from('reward_wishes').insert({
       user_id: userId,
@@ -39,16 +41,18 @@ export default function WishesClient({ wishes, userId }: Props) {
     })
 
     setLoading(false)
-    if (!error) {
-      setSubmitted(true)
-      setTitle('')
-      setEmoji('')
-      setReason('')
-      setTimeout(() => {
-        setSubmitted(false)
-        router.refresh()
-      }, 1500)
+    if (error) {
+      setErrorMsg(error.message)
+      return
     }
+    setSubmitted(true)
+    setTitle('')
+    setEmoji('')
+    setReason('')
+    setTimeout(() => {
+      setSubmitted(false)
+      router.refresh()
+    }, 1500)
   }
 
   return (
@@ -96,6 +100,12 @@ export default function WishesClient({ wishes, userId }: Props) {
               placeholder="我覺得這個應該可以變成獎勵..."
             />
           </div>
+
+          {errorMsg && (
+            <div className="bg-red-50 border border-red-200 rounded-xl p-2.5">
+              <p className="text-red-500 text-xs font-medium">❌ 送出失敗：{errorMsg}</p>
+            </div>
+          )}
 
           {submitted && (
             <div className="bg-green-50 border border-green-200 rounded-xl p-2.5 text-center">
