@@ -3,11 +3,12 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import type { PointRequest, RewardWish } from '@/lib/types'
+import type { PointRequest, RewardWish, Redemption } from '@/lib/types'
 
 interface Props {
   requests: PointRequest[]
   wishes: RewardWish[]
+  redemptions: Redemption[]
   adminId: string
 }
 
@@ -17,11 +18,12 @@ const STATUS_LABEL: Record<string, { label: string; color: string }> = {
   rejected: { label: '未通過', color: 'text-gray-400 bg-gray-50 border-gray-200' },
 }
 
-export default function AdminReviewClient({ requests, wishes, adminId }: Props) {
+export default function AdminReviewClient({ requests, wishes, redemptions, adminId }: Props) {
   const router = useRouter()
   const supabase = createClient()
 
-  const [tab, setTab] = useState<'requests' | 'wishes'>('requests')
+  const [tab, setTab] = useState<'requests' | 'wishes' | 'redemptions'>('requests')
+  const [fulfillingId, setFulfillingId] = useState<string | null>(null)
   const [loading, setLoading] = useState<string | null>(null)
 
   // Request approval state: requestId → { points, reply }
@@ -124,8 +126,19 @@ export default function AdminReviewClient({ requests, wishes, adminId }: Props) 
     router.refresh()
   }
 
+  async function fulfillRedemption(redemption: Redemption) {
+    setFulfillingId(redemption.id)
+    await supabase.from('redemptions').update({
+      fulfilled: true,
+      fulfilled_at: new Date().toISOString(),
+    }).eq('id', redemption.id)
+    setFulfillingId(null)
+    router.refresh()
+  }
+
   const pendingRequests = requests.filter((r) => r.status === 'pending')
   const pendingWishes = wishes.filter((w) => w.status === 'pending')
+  const unfulfilled = redemptions.filter((r) => !r.fulfilled)
 
   return (
     <div className="space-y-5">
@@ -158,6 +171,21 @@ export default function AdminReviewClient({ requests, wishes, adminId }: Props) 
           {pendingWishes.length > 0 && (
             <span className="bg-red-500 text-white text-[10px] font-bold rounded-full min-w-[16px] h-4 flex items-center justify-center px-1">
               {pendingWishes.length}
+            </span>
+          )}
+        </button>
+        <button
+          onClick={() => setTab('redemptions')}
+          className={`flex-1 py-3 text-sm font-semibold transition flex items-center justify-center gap-1.5 ${
+            tab === 'redemptions'
+              ? 'text-pink-600 bg-pink-50 border-b-2 border-pink-500'
+              : 'text-gray-400 hover:text-pink-400'
+          }`}
+        >
+          🎁 待兌現
+          {unfulfilled.length > 0 && (
+            <span className="bg-red-500 text-white text-[10px] font-bold rounded-full min-w-[16px] h-4 flex items-center justify-center px-1">
+              {unfulfilled.length}
             </span>
           )}
         </button>
@@ -349,6 +377,45 @@ export default function AdminReviewClient({ requests, wishes, adminId }: Props) 
                 </div>
               )
             })
+          )}
+        </div>
+      )}
+
+      {/* Redemptions tab */}
+      {tab === 'redemptions' && (
+        <div className="space-y-3">
+          {redemptions.length === 0 ? (
+            <div className="bg-white rounded-2xl border border-pink-100 p-8 text-center text-pink-300">
+              <div className="text-4xl mb-2">🎁</div>
+              <p className="text-sm">還沒有兌換紀錄</p>
+            </div>
+          ) : (
+            redemptions.map((rd) => (
+              <div key={rd.id} className="bg-white rounded-2xl border border-pink-100 p-4 flex items-center gap-3">
+                <div className="text-2xl">{rd.reward_emoji}</div>
+                <div className="flex-1 min-w-0">
+                  <p className="font-medium text-sm text-gray-700">{rd.reward_title}</p>
+                  <p className="text-xs text-pink-400">{rd.profiles?.display_name} · 花了 {rd.points_spent} 分</p>
+                  <p className="text-xs text-pink-300">
+                    {new Date(rd.created_at).toLocaleDateString('zh-TW', { month: 'long', day: 'numeric' })}
+                  </p>
+                  {rd.fulfilled && (
+                    <p className="text-xs text-green-500 mt-0.5">✅ 已兌現 {rd.fulfilled_at ? new Date(rd.fulfilled_at).toLocaleDateString('zh-TW', { month: 'short', day: 'numeric' }) : ''}</p>
+                  )}
+                </div>
+                {!rd.fulfilled ? (
+                  <button
+                    onClick={() => fulfillRedemption(rd)}
+                    disabled={fulfillingId === rd.id}
+                    className="text-xs px-3 py-1.5 rounded-xl bg-green-500 text-white font-semibold hover:bg-green-600 transition disabled:opacity-50 shrink-0"
+                  >
+                    {fulfillingId === rd.id ? '...' : '標記已兌現'}
+                  </button>
+                ) : (
+                  <span className="text-xs text-green-400 shrink-0">✅ 已兌現</span>
+                )}
+              </div>
+            ))
           )}
         </div>
       )}

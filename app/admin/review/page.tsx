@@ -2,7 +2,7 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import Navbar from '@/components/Navbar'
 import AdminReviewClient from '@/components/AdminReviewClient'
-import type { PointRequest, RewardWish } from '@/lib/types'
+import type { PointRequest, RewardWish, Redemption } from '@/lib/types'
 
 export default async function AdminReviewPage() {
   const supabase = await createClient()
@@ -19,7 +19,7 @@ export default async function AdminReviewPage() {
   const { data: requests } = await supabase
     .from('point_requests')
     .select('*, profiles!point_requests_user_id_fkey(display_name)')
-    .order('status', { ascending: true }) // pending first
+    .order('status', { ascending: true })
     .order('created_at', { ascending: false })
 
   const { data: wishes } = await supabase
@@ -28,9 +28,16 @@ export default async function AdminReviewPage() {
     .order('status', { ascending: true })
     .order('created_at', { ascending: false })
 
+  const { data: redemptions } = await supabase
+    .from('redemptions')
+    .select('*, profiles!redemptions_user_id_fkey(display_name)')
+    .order('fulfilled', { ascending: true })
+    .order('created_at', { ascending: false })
+
   const pendingCount =
     (requests ?? []).filter((r) => r.status === 'pending').length +
-    (wishes ?? []).filter((w) => w.status === 'pending').length
+    (wishes ?? []).filter((w) => w.status === 'pending').length +
+    (redemptions ?? []).filter((r) => !r.fulfilled).length
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -49,6 +56,7 @@ export default async function AdminReviewPage() {
         <AdminReviewClient
           requests={(requests ?? []) as PointRequest[]}
           wishes={(wishes ?? []) as RewardWish[]}
+          redemptions={(redemptions ?? []) as Redemption[]}
           adminId={user.id}
         />
       </main>

@@ -3,12 +3,13 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import type { PointAction, Profile } from '@/lib/types'
+import type { PointAction, Profile, SpecialDate } from '@/lib/types'
 
 interface Props {
   actions: PointAction[]
   users: Profile[]
   adminId: string
+  specialDates?: SpecialDate[]
 }
 
 interface ShareResult {
@@ -19,9 +20,23 @@ interface ShareResult {
   message: string
 }
 
-export default function AwardPointsForm({ actions, users, adminId }: Props) {
+function getTodaySpecialDate(dates: SpecialDate[] = []) {
+  const today = new Date()
+  const mm = String(today.getMonth() + 1).padStart(2, '0')
+  const dd = String(today.getDate()).padStart(2, '0')
+  const todayFull = today.toISOString().split('T')[0]
+  return dates.find((d) => {
+    const dObj = new Date(d.date + 'T00:00:00')
+    const dMM = String(dObj.getMonth() + 1).padStart(2, '0')
+    const dDD = String(dObj.getDate()).padStart(2, '0')
+    return d.repeat_yearly ? (dMM === mm && dDD === dd) : d.date === todayFull
+  }) ?? null
+}
+
+export default function AwardPointsForm({ actions, users, adminId, specialDates }: Props) {
   const router = useRouter()
   const supabase = createClient()
+  const todaySpecial = getTodaySpecialDate(specialDates)
 
   const [mode, setMode] = useState<'award' | 'deduct'>('award')
 
@@ -46,10 +61,13 @@ export default function AwardPointsForm({ actions, users, adminId }: Props) {
     if (!selectedAction || !selectedUserId) return
     setLoading(true)
 
+    const multiplier = todaySpecial ? todaySpecial.bonus_multiplier : 1
+    const finalPoints = Math.round(selectedAction.points * multiplier)
+
     const { error } = await supabase.from('point_transactions').insert({
       user_id: selectedUserId,
       action_id: selectedAction.id,
-      points: selectedAction.points,
+      points: finalPoints,
       note: message.trim() || null,
       awarded_by: adminId,
     })
@@ -58,7 +76,7 @@ export default function AwardPointsForm({ actions, users, adminId }: Props) {
     if (!error) {
       setShareResult({
         userName: selectedUser?.display_name ?? '男友',
-        points: selectedAction.points,
+        points: finalPoints,
         actionEmoji: selectedAction.emoji,
         actionTitle: selectedAction.title,
         message: message.trim(),
@@ -194,6 +212,16 @@ export default function AwardPointsForm({ actions, users, adminId }: Props) {
             </div>
           )}
 
+          {todaySpecial && mode === 'award' && (
+            <div className="bg-gradient-to-r from-rose-50 to-pink-50 border border-rose-200 rounded-xl p-3 flex items-center gap-2 -mt-1 mb-1">
+              <span className="text-xl">{todaySpecial.emoji}</span>
+              <div>
+                <p className="text-xs font-semibold text-rose-600">🎊 今天是{todaySpecial.name}！</p>
+                <p className="text-xs text-rose-400">積分自動 ×{todaySpecial.bonus_multiplier} 倍</p>
+              </div>
+            </div>
+          )}
+
           {mode === 'award' ? (
             <form onSubmit={handleAward} className="space-y-4">
               {actions.length === 0 ? (
@@ -245,9 +273,9 @@ export default function AwardPointsForm({ actions, users, adminId }: Props) {
                 disabled={!selectedAction || loading}
                 className="w-full py-3 rounded-xl bg-pink-500 text-white font-semibold hover:bg-pink-600 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {loading
-                  ? '送出中...'
-                  : `給予 ${selectedAction ? `+${selectedAction.points}` : ''} 積分 💕`}
+                {loading ? '送出中...' : selectedAction
+                  ? `給予 +${Math.round(selectedAction.points * (todaySpecial?.bonus_multiplier ?? 1))} 積分 💕${todaySpecial ? ` (×${todaySpecial.bonus_multiplier})` : ''}`
+                  : '給予積分 💕'}
               </button>
             </form>
           ) : (

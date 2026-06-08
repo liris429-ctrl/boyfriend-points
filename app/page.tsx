@@ -1,7 +1,8 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import Navbar from '@/components/Navbar'
-import type { PointTransaction } from '@/lib/types'
+import DailyTaskCard from '@/components/DailyTaskCard'
+import type { PointTransaction, DailyTask } from '@/lib/types'
 
 const MILESTONES = [50, 100, 200, 500, 1000]
 
@@ -51,6 +52,37 @@ export default async function DashboardPage() {
     ? Math.round(((awarded - prevMilestone) / (nextMilestone - prevMilestone)) * 100)
     : 100
 
+  // Today's daily task
+  const today = new Date().toISOString().split('T')[0]
+  const { data: todayTaskRows } = await supabase
+    .from('daily_tasks')
+    .select('*')
+    .eq('task_date', today)
+    .limit(1)
+  const todayTask = (todayTaskRows?.[0] ?? null) as DailyTask | null
+
+  // Streak calculation
+  const { data: allDates } = await supabase
+    .from('point_transactions')
+    .select('created_at')
+    .eq('user_id', user.id)
+    .gt('points', 0)
+    .order('created_at', { ascending: false })
+
+  let streak = 0
+  if (allDates && allDates.length > 0) {
+    const uniqueDays = [...new Set(allDates.map((t) =>
+      new Date(t.created_at).toLocaleDateString('zh-TW')
+    ))]
+    const check = new Date()
+    for (const day of uniqueDays) {
+      if (new Date(check).toLocaleDateString('zh-TW') === day) {
+        streak++
+        check.setDate(check.getDate() - 1)
+      } else break
+    }
+  }
+
   // Latest love note from admin
   const { data: latestNoteRows } = await supabase
     .from('point_transactions')
@@ -92,6 +124,20 @@ export default async function DashboardPage() {
             )}
           </div>
         </div>
+
+        {/* Streak */}
+        {streak > 0 && (
+          <div className="bg-gradient-to-r from-orange-50 to-amber-50 border border-amber-200 rounded-2xl p-3 flex items-center gap-3">
+            <div className="text-2xl">{'🔥'.repeat(Math.min(streak, 5))}</div>
+            <div>
+              <p className="font-semibold text-amber-700 text-sm">連續 {streak} 天好表現！</p>
+              <p className="text-xs text-amber-500">繼續保持，你最棒了 💪</p>
+            </div>
+          </div>
+        )}
+
+        {/* Today's daily task */}
+        {todayTask && <DailyTaskCard task={todayTask} userId={user.id} />}
 
         {/* Love note from admin */}
         {latestNote && (

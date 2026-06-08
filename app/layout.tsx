@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import MarqueeBar from "@/components/MarqueeBar";
 
 export const metadata: Metadata = {
   title: "💕 男友積分本",
@@ -19,7 +20,10 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body className="min-h-full flex flex-col bg-pink-50">{children}</body>
+      <body className="min-h-full flex flex-col bg-pink-50">
+        <MarqueeBar />
+        {children}
+      </body>
     </html>
   );
 }

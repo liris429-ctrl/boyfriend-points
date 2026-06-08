@@ -20,6 +20,7 @@ export interface Reward {
   emoji: string
   points_required: number
   active: boolean
+  expires_at: string | null
   created_at: string
 }
 
@@ -42,7 +43,10 @@ export interface Redemption {
   reward_title: string
   reward_emoji: string
   points_spent: number
+  fulfilled: boolean
+  fulfilled_at: string | null
   created_at: string
+  profiles?: { display_name: string } | null
 }
 
 export interface RewardWish {
@@ -70,4 +74,41 @@ export interface PointRequest {
   reviewed_at: string | null
   created_at: string
   profiles?: { display_name: string } | null
+}
+
+export interface DailyTask {
+  id: string
+  title: string
+  emoji: string
+  points: number
+  task_date: string
+  created_by: string | null
+  created_at: string
+}
+
+export interface SpecialDate {
+  id: string
+  name: string
+  emoji: string
+  date: string
+  repeat_yearly: boolean
+  bonus_multiplier: number
+  created_at: string
+}
+
+export interface Message {
+  id: string
+  sender_id: string
+  content: string
+  mood_emoji: string
+  created_at: string
+  profiles?: { display_name: string; role: string } | null
+}
+
+export interface MarqueeMessage {
+  id: string
+  content: string
+  active: boolean
+  sort_order: number
+  created_at: string
 }

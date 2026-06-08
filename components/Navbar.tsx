@@ -26,6 +26,7 @@ export default function Navbar({ role, displayName, pendingCount }: NavbarProps)
   const userLinks: NavLink[] = [
     { href: '/', label: '首頁', emoji: '🏠', badge: 0 },
     { href: '/rewards', label: '獎勵', emoji: '🎁', badge: 0 },
+    { href: '/messages', label: '留言', emoji: '💬', badge: 0 },
     { href: '/history', label: '紀錄', emoji: '📋', badge: 0 },
   ]
 
@@ -34,7 +35,7 @@ export default function Navbar({ role, displayName, pendingCount }: NavbarProps)
     { href: '/admin/review', label: '審核', emoji: '📋', badge: pendingCount ?? 0 },
     { href: '/admin/actions', label: '積分', emoji: '📝', badge: 0 },
     { href: '/admin/rewards', label: '獎勵', emoji: '🎁', badge: 0 },
-    { href: '/history', label: '紀錄', emoji: '📊', badge: 0 },
+    { href: '/admin/special-dates', label: '紀念日', emoji: '🎊', badge: 0 },
   ]
 
   const links = role === 'admin' ? adminLinks : userLinks

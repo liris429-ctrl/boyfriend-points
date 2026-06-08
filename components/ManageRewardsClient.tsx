@@ -18,17 +18,22 @@ export default function ManageRewardsClient({ initialRewards }: Props) {
   const [rewards, setRewards] = useState(initialRewards)
   const [showForm, setShowForm] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
-  const [form, setForm] = useState({ title: '', emoji: '🎁', points_required: 50 })
+  const [form, setForm] = useState({ title: '', emoji: '🎁', points_required: 50, expires_at: '' })
   const [loading, setLoading] = useState(false)
 
   function startAdd() {
-    setForm({ title: '', emoji: '🎁', points_required: 50 })
+    setForm({ title: '', emoji: '🎁', points_required: 50, expires_at: '' })
     setEditingId(null)
     setShowForm(true)
   }
 
   function startEdit(reward: Reward) {
-    setForm({ title: reward.title, emoji: reward.emoji, points_required: reward.points_required })
+    setForm({
+      title: reward.title,
+      emoji: reward.emoji,
+      points_required: reward.points_required,
+      expires_at: reward.expires_at ? reward.expires_at.slice(0, 16) : '',
+    })
     setEditingId(reward.id)
     setShowForm(true)
   }
@@ -37,20 +42,18 @@ export default function ManageRewardsClient({ initialRewards }: Props) {
     if (!form.title.trim()) return
     setLoading(true)
 
+    const payload = {
+      title: form.title,
+      emoji: form.emoji,
+      points_required: form.points_required,
+      expires_at: form.expires_at ? new Date(form.expires_at).toISOString() : null,
+    }
+
     if (editingId) {
-      const { data } = await supabase
-        .from('rewards')
-        .update({ title: form.title, emoji: form.emoji, points_required: form.points_required })
-        .eq('id', editingId)
-        .select()
-        .single()
+      const { data } = await supabase.from('rewards').update(payload).eq('id', editingId).select().single()
       if (data) setRewards(rewards.map((r) => (r.id === editingId ? data : r)))
     } else {
-      const { data } = await supabase
-        .from('rewards')
-        .insert({ title: form.title, emoji: form.emoji, points_required: form.points_required })
-        .select()
-        .single()
+      const { data } = await supabase.from('rewards').insert(payload).select().single()
       if (data) setRewards([data, ...rewards])
     }
 
@@ -116,6 +119,16 @@ export default function ManageRewardsClient({ initialRewards }: Props) {
             />
           </div>
 
+          <div>
+            <label className="text-xs text-pink-600 mb-1 block">限時到期（選填）</label>
+            <input
+              type="datetime-local"
+              value={form.expires_at}
+              onChange={(e) => setForm({ ...form, expires_at: e.target.value })}
+              className="w-full px-3 py-2 rounded-xl border border-pink-200 text-sm focus:outline-none focus:border-pink-400"
+            />
+          </div>
+
           <div className="flex gap-2">
             <button
               onClick={handleSave}
@@ -153,6 +166,11 @@ export default function ManageRewardsClient({ initialRewards }: Props) {
             <div className="flex-1 min-w-0">
               <p className="font-medium text-sm text-gray-700">{reward.title}</p>
               <p className="text-xs text-pink-500">{reward.points_required} 分</p>
+              {reward.expires_at && (
+                <p className="text-xs text-orange-400">
+                  ⏰ {new Date(reward.expires_at) < new Date() ? '已到期' : `到期：${new Date(reward.expires_at).toLocaleDateString('zh-TW', { month: 'short', day: 'numeric' })}`}
+                </p>
+              )}
             </div>
             <div className="flex items-center gap-2">
               <button
