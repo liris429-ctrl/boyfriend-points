@@ -13,6 +13,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="zh-TW" className="h-full">
+      <head>
+        <link
+          href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap"
+          rel="stylesheet"
+        />
+      </head>
       <body className="min-h-full flex flex-col bg-pink-50">{children}</body>
     </html>
   );
