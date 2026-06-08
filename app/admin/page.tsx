@@ -25,6 +25,8 @@ export default async function AdminPage() {
     { data: recentTx },
     { data: todayTaskRows },
     { data: specialDates },
+    { data: allTx },
+    { data: allRedemptions },
     { count: pendingRequestCount },
     { count: pendingWishCount },
     { count: pendingFulfillCount },
@@ -36,6 +38,8 @@ export default async function AdminPage() {
       .order('created_at', { ascending: false }).limit(8),
     supabase.from('daily_tasks').select('*').eq('task_date', today).limit(1),
     supabase.from('special_dates').select('*'),
+    supabase.from('point_transactions').select('user_id, points'),
+    supabase.from('redemptions').select('user_id, points_spent'),
     supabase.from('point_requests').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
     supabase.from('reward_wishes').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
     supabase.from('redemptions').select('*', { count: 'exact', head: true }).eq('fulfilled', false),
@@ -44,12 +48,36 @@ export default async function AdminPage() {
   const pendingCount = (pendingRequestCount ?? 0) + (pendingWishCount ?? 0) + (pendingFulfillCount ?? 0)
   const todayTask = (todayTaskRows?.[0] ?? null) as DailyTask | null
 
+  // Calculate per-user balance for the overview card
+  const userBalances = (users ?? []).map((u) => {
+    const awarded = (allTx ?? []).filter((t) => t.user_id === u.id && t.points > 0).reduce((s, t) => s + t.points, 0)
+    const deducted = (allTx ?? []).filter((t) => t.user_id === u.id && t.points < 0).reduce((s, t) => s + t.points, 0)
+    const spent = (allRedemptions ?? []).filter((r) => r.user_id === u.id).reduce((s, r) => s + r.points_spent, 0)
+    return { ...u, balance: awarded + deducted - spent, awarded }
+  })
+
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar role={profile.role} displayName={profile.display_name} pendingCount={pendingCount} />
 
       <main className="flex-1 max-w-lg mx-auto w-full p-4 space-y-5">
-        <div className="mt-2">
+        {/* Boyfriend balance overview */}
+        {userBalances.length > 0 && (
+          <div className="mt-2 flex gap-3">
+            {userBalances.map((u) => (
+              <div
+                key={u.id}
+                className="flex-1 bg-gradient-to-br from-pink-400 to-rose-400 rounded-2xl p-4 text-white"
+              >
+                <p className="text-pink-100 text-xs mb-1">💙 {u.display_name} 的積分</p>
+                <p className="text-4xl font-bold leading-none">{u.balance}</p>
+                <p className="text-pink-200 text-xs mt-1">累積獲得 {u.awarded} 分</p>
+              </div>
+            ))}
+          </div>
+        )}
+
+        <div>
           <h1 className="text-xl font-bold text-pink-700 flex items-center gap-2">
             <span>⭐</span> 給分
           </h1>

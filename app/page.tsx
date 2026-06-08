@@ -106,7 +106,7 @@ export default async function DashboardPage() {
     <div className="min-h-screen flex flex-col">
       <Navbar role={profile.role} displayName={profile.display_name} />
 
-      <main className="flex-1 max-w-lg mx-auto w-full p-4 space-y-4">
+      <main className="flex-1 max-w-lg mx-auto w-full p-4 pb-24 space-y-4">
         {/* Balance Card */}
         <div className="bg-gradient-to-br from-pink-400 to-rose-400 rounded-3xl p-6 text-white text-center shadow-md mt-2">
           <p className="text-pink-100 text-sm mb-1">目前積分</p>

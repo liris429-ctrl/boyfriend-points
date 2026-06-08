@@ -56,7 +56,7 @@ export default async function HistoryPage() {
     <div className="min-h-screen flex flex-col">
       <Navbar role={profile.role} displayName={profile.display_name} />
 
-      <main className="flex-1 max-w-lg mx-auto w-full p-4 space-y-5">
+      <main className="flex-1 max-w-lg mx-auto w-full p-4 pb-24 space-y-5">
         <div className="mt-2">
           <h1 className="text-xl font-bold text-pink-700 flex items-center gap-2">
             <span>📋</span> 積分紀錄

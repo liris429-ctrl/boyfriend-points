@@ -65,7 +65,7 @@ export default function MarqueeAdminClient({ messages: initial }: Props) {
           onChange={(e) => setNewText(e.target.value)}
           maxLength={50}
           placeholder="💕 今天要乖喔！"
-          className="flex-1 px-3 py-2 rounded-xl border border-pink-200 text-sm focus:outline-none focus:border-pink-400"
+          className="flex-1 min-w-0 px-3 py-2 rounded-xl border border-pink-200 text-sm focus:outline-none focus:border-pink-400"
           onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
         />
         <button
