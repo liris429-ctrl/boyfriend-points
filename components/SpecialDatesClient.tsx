@@ -89,8 +89,8 @@ export default function SpecialDatesClient({ dates: initial }: Props) {
             />
           </div>
 
-          <div className="flex gap-2">
-            <div className="flex-1">
+          <div className="grid grid-cols-2 gap-2">
+            <div>
               <label className="text-xs text-pink-500 mb-1 block">日期</label>
               <input
                 type="date"
@@ -99,7 +99,7 @@ export default function SpecialDatesClient({ dates: initial }: Props) {
                 className="w-full px-3 py-2 rounded-xl border border-pink-200 text-sm focus:outline-none focus:border-pink-400"
               />
             </div>
-            <div className="w-24">
+            <div>
               <label className="text-xs text-pink-500 mb-1 block">積分倍數</label>
               <select
                 value={form.bonus_multiplier}
