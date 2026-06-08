@@ -2,7 +2,7 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import Navbar from '@/components/Navbar'
 import DailyTaskCard from '@/components/DailyTaskCard'
-import type { PointTransaction, DailyTask } from '@/lib/types'
+import type { PointTransaction, DailyTask, SpecialDate } from '@/lib/types'
 
 const MILESTONES = [50, 100, 200, 500, 1000]
 
@@ -52,14 +52,23 @@ export default async function DashboardPage() {
     ? Math.round(((awarded - prevMilestone) / (nextMilestone - prevMilestone)) * 100)
     : 100
 
-  // Today's daily task
+  // Today's daily task + special dates (parallel)
   const today = new Date().toISOString().split('T')[0]
-  const { data: todayTaskRows } = await supabase
-    .from('daily_tasks')
-    .select('*')
-    .eq('task_date', today)
-    .limit(1)
+  const [{ data: todayTaskRows }, { data: specialDates }] = await Promise.all([
+    supabase.from('daily_tasks').select('*').eq('task_date', today).limit(1),
+    supabase.from('special_dates').select('*'),
+  ])
   const todayTask = (todayTaskRows?.[0] ?? null) as DailyTask | null
+
+  // Check if today is a special date
+  const todaySpecial = ((specialDates ?? []) as SpecialDate[]).find((d) => {
+    const dObj = new Date(d.date + 'T00:00:00')
+    const mm = String(new Date().getMonth() + 1).padStart(2, '0')
+    const dd = String(new Date().getDate()).padStart(2, '0')
+    const dMM = String(dObj.getMonth() + 1).padStart(2, '0')
+    const dDD = String(dObj.getDate()).padStart(2, '0')
+    return d.repeat_yearly ? (dMM === mm && dDD === dd) : d.date === today
+  }) ?? null
 
   // Streak calculation
   const { data: allDates } = await supabase
@@ -132,6 +141,19 @@ export default async function DashboardPage() {
             <div>
               <p className="font-semibold text-amber-700 text-sm">連續 {streak} 天好表現！</p>
               <p className="text-xs text-amber-500">繼續保持，你最棒了 💪</p>
+            </div>
+          </div>
+        )}
+
+        {/* Special date banner */}
+        {todaySpecial && (
+          <div className="bg-gradient-to-r from-rose-50 to-pink-50 border border-rose-200 rounded-2xl p-4 flex items-center gap-3">
+            <span className="text-3xl">{todaySpecial.emoji}</span>
+            <div>
+              <p className="font-bold text-rose-600 text-sm">今天是 {todaySpecial.name}！</p>
+              <p className="text-xs text-rose-400 mt-0.5">
+                所有積分 ×{todaySpecial.bonus_multiplier} 加倍中 🎉
+              </p>
             </div>
           </div>
         )}

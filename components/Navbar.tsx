@@ -49,6 +49,7 @@ export default function Navbar({ role, displayName, pendingCount }: NavbarProps)
   ]
 
   const adminMore: NavLink[] = [
+    { href: '/messages', label: '留言板', emoji: '💬', badge: 0 },
     { href: '/admin/actions', label: '積分項目', emoji: '📝', badge: 0 },
     { href: '/admin/rewards', label: '獎勵項目', emoji: '🎁', badge: 0 },
     { href: '/admin/special-dates', label: '紀念日', emoji: '🎊', badge: 0 },

@@ -89,28 +89,27 @@ export default function SpecialDatesClient({ dates: initial }: Props) {
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-2">
-            <div>
-              <label className="text-xs text-pink-500 mb-1 block">日期</label>
-              <input
-                type="date"
-                value={form.date}
-                onChange={(e) => setForm({ ...form, date: e.target.value })}
-                className="w-full px-3 py-2 rounded-xl border border-pink-200 text-sm focus:outline-none focus:border-pink-400"
-              />
-            </div>
-            <div>
-              <label className="text-xs text-pink-500 mb-1 block">積分倍數</label>
-              <select
-                value={form.bonus_multiplier}
-                onChange={(e) => setForm({ ...form, bonus_multiplier: parseFloat(e.target.value) })}
-                className="w-full px-2 py-2 rounded-xl border border-pink-200 text-sm focus:outline-none focus:border-pink-400"
-              >
-                <option value={1.5}>×1.5</option>
-                <option value={2}>×2</option>
-                <option value={3}>×3</option>
-              </select>
-            </div>
+          <div>
+            <label className="text-xs text-pink-500 mb-1 block">日期</label>
+            <input
+              type="date"
+              value={form.date}
+              onChange={(e) => setForm({ ...form, date: e.target.value })}
+              className="w-full px-3 py-2 rounded-xl border border-pink-200 text-sm focus:outline-none focus:border-pink-400"
+            />
+          </div>
+
+          <div>
+            <label className="text-xs text-pink-500 mb-1 block">積分倍數</label>
+            <select
+              value={form.bonus_multiplier}
+              onChange={(e) => setForm({ ...form, bonus_multiplier: parseFloat(e.target.value) })}
+              className="w-full px-2 py-2 rounded-xl border border-pink-200 text-sm focus:outline-none focus:border-pink-400"
+            >
+              <option value={1.5}>×1.5</option>
+              <option value={2}>×2</option>
+              <option value={3}>×3</option>
+            </select>
           </div>
 
           <label className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer">

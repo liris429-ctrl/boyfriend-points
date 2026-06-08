@@ -71,7 +71,7 @@ export default function MarqueeAdminClient({ messages: initial }: Props) {
         <button
           onClick={handleAdd}
           disabled={!newText.trim() || loading}
-          className="px-4 py-2 rounded-xl bg-pink-500 text-white text-sm font-semibold hover:bg-pink-600 transition disabled:opacity-50"
+          className="shrink-0 px-4 py-2 rounded-xl bg-pink-500 text-white text-sm font-semibold hover:bg-pink-600 transition disabled:opacity-50"
         >
           新增
         </button>
