@@ -3,8 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import Navbar from '@/components/Navbar'
 import AwardPointsForm from '@/components/AwardPointsForm'
 import AdminDailyTaskForm from '@/components/AdminDailyTaskForm'
-import MarqueeAdminClient from '@/components/MarqueeAdminClient'
-import type { PointAction, Profile, PointTransaction, DailyTask, SpecialDate, MarqueeMessage } from '@/lib/types'
+import type { PointAction, Profile, PointTransaction, DailyTask, SpecialDate } from '@/lib/types'
 
 export default async function AdminPage() {
   const supabase = await createClient()
@@ -26,7 +25,6 @@ export default async function AdminPage() {
     { data: recentTx },
     { data: todayTaskRows },
     { data: specialDates },
-    { data: marqueeMessages },
     { count: pendingRequestCount },
     { count: pendingWishCount },
     { count: pendingFulfillCount },
@@ -38,7 +36,6 @@ export default async function AdminPage() {
       .order('created_at', { ascending: false }).limit(8),
     supabase.from('daily_tasks').select('*').eq('task_date', today).limit(1),
     supabase.from('special_dates').select('*'),
-    supabase.from('marquee_messages').select('*').order('sort_order', { ascending: true }),
     supabase.from('point_requests').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
     supabase.from('reward_wishes').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
     supabase.from('redemptions').select('*', { count: 'exact', head: true }).eq('fulfilled', false),
@@ -73,9 +70,6 @@ export default async function AdminPage() {
           </h2>
           <AdminDailyTaskForm todayTask={todayTask} adminId={user.id} />
         </div>
-
-        {/* Marquee management */}
-        <MarqueeAdminClient messages={(marqueeMessages ?? []) as MarqueeMessage[]} />
 
         {/* Recent activity */}
         <div>
