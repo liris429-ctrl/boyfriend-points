@@ -273,15 +273,17 @@ export default function DiaryClient({ entries: initial, userId, userRole }: Prop
             return (
               <div key={entry.id} className="bg-white rounded-2xl border border-pink-100 p-4">
                 {/* Entry header */}
-                <div className="flex items-start justify-between mb-2">
-                  <div className="flex items-center gap-1.5">
-                    <span>{isAuthorAdmin ? '👑' : '💙'}</span>
-                    <span className="text-xs font-semibold text-gray-600">{entry.profiles?.display_name}</span>
-                    <span className="text-xs text-pink-300">
-                      {new Date(entry.created_at).toLocaleDateString('zh-TW', {
-                        timeZone: 'Asia/Taipei', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit',
-                      })}
-                    </span>
+                <div className="flex items-start justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xl leading-none">{isAuthorAdmin ? '👑' : '💙'}</span>
+                    <div>
+                      <p className="text-sm font-bold text-gray-800 leading-tight">{entry.profiles?.display_name ?? '—'}</p>
+                      <p className="text-xs text-pink-300 mt-0.5">
+                        {new Date(entry.created_at).toLocaleDateString('zh-TW', {
+                          timeZone: 'Asia/Taipei', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit',
+                        })}
+                      </p>
+                    </div>
                   </div>
 
                   {canDelete && (
@@ -339,10 +341,10 @@ export default function DiaryClient({ entries: initial, userId, userRole }: Prop
                         const canDeleteComment = comment.author_id === userId || userRole === 'admin'
                         return (
                           <div key={comment.id} className="flex items-start gap-2">
-                            <span className="text-sm pt-1">{isCommentAdmin ? '👑' : '💙'}</span>
                             <div className="flex-1 min-w-0 bg-pink-50 rounded-xl px-3 py-2">
-                              <div className="flex items-center gap-1.5 mb-0.5">
-                                <span className="text-xs font-semibold text-gray-600">{comment.profiles?.display_name}</span>
+                              <div className="flex items-center gap-1.5 mb-1">
+                                <span className="text-sm leading-none">{isCommentAdmin ? '👑' : '💙'}</span>
+                                <span className="text-xs font-bold text-gray-800">{comment.profiles?.display_name ?? '—'}</span>
                                 <span className="text-xs text-pink-300">
                                   {new Date(comment.created_at).toLocaleDateString('zh-TW', {
                                     timeZone: 'Asia/Taipei', month: 'short', day: 'numeric',
@@ -350,7 +352,7 @@ export default function DiaryClient({ entries: initial, userId, userRole }: Prop
                                   })}
                                 </span>
                               </div>
-                              <p className="text-xs text-gray-700 leading-relaxed">{comment.content}</p>
+                              <p className="text-sm text-gray-700 leading-relaxed">{comment.content}</p>
                             </div>
                             {canDeleteComment && (
                               confirmDeleteCommentId === comment.id ? (
