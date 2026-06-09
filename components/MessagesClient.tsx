@@ -123,7 +123,7 @@ export default function MessagesClient({ messages: initial, userId, userRole }: 
                     </span>
                     <span className="text-xs text-pink-200">
                       {new Date(msg.created_at).toLocaleDateString('zh-TW', {
-                        month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit',
+                        timeZone: 'Asia/Taipei', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit',
                       })}
                     </span>
                     {isOwn && (

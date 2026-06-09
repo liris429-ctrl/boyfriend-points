@@ -227,7 +227,7 @@ export default function DiaryClient({ entries: initial, userId, userRole }: Prop
                     <span className="text-xs font-semibold text-gray-600">{entry.profiles?.display_name}</span>
                     <span className="text-xs text-pink-300">
                       {new Date(entry.created_at).toLocaleDateString('zh-TW', {
-                        month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit',
+                        timeZone: 'Asia/Taipei', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit',
                       })}
                     </span>
                   </div>
@@ -261,6 +261,7 @@ export default function DiaryClient({ entries: initial, userId, userRole }: Prop
                     <img
                       src={entry.photo_url}
                       alt=""
+                      loading="lazy"
                       onClick={() => setFullscreenPhoto(entry.photo_url!)}
                       className="w-36 h-36 object-cover rounded-xl cursor-pointer hover:opacity-90 active:scale-95 transition"
                     />

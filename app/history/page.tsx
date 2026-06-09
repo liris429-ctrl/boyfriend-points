@@ -89,7 +89,7 @@ export default async function HistoryPage() {
                       )}
                       <p className="text-xs text-pink-300">
                         {new Date(tx.created_at).toLocaleDateString('zh-TW', {
-                          year: 'numeric', month: 'long', day: 'numeric',
+                          timeZone: 'Asia/Taipei', year: 'numeric', month: 'long', day: 'numeric',
                           hour: '2-digit', minute: '2-digit',
                         })}
                       </p>
@@ -113,7 +113,7 @@ export default async function HistoryPage() {
                       </p>
                       <p className="text-xs text-pink-300">
                         {new Date(r.created_at).toLocaleDateString('zh-TW', {
-                          year: 'numeric', month: 'long', day: 'numeric',
+                          timeZone: 'Asia/Taipei', year: 'numeric', month: 'long', day: 'numeric',
                           hour: '2-digit', minute: '2-digit',
                         })}
                       </p>

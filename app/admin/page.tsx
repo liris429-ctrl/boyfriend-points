@@ -126,7 +126,7 @@ export default async function AdminPage() {
                     <p className="text-xs text-pink-300">
                       {tx.profiles?.display_name} ·{' '}
                       {new Date(tx.created_at).toLocaleDateString('zh-TW', {
-                        month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+                        timeZone: 'Asia/Taipei', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
                       })}
                     </p>
                   </div>

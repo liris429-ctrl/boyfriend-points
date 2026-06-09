@@ -94,11 +94,11 @@ export default async function DashboardPage() {
   let streak = 0
   if (allDates && allDates.length > 0) {
     const uniqueDays = [...new Set(allDates.map((t) =>
-      new Date(t.created_at).toLocaleDateString('zh-TW')
+      new Date(t.created_at).toLocaleDateString('zh-TW', { timeZone: 'Asia/Taipei' })
     ))]
     const check = new Date()
     for (const day of uniqueDays) {
-      if (new Date(check).toLocaleDateString('zh-TW') === day) {
+      if (new Date(check).toLocaleDateString('zh-TW', { timeZone: 'Asia/Taipei' }) === day) {
         streak++
         check.setDate(check.getDate() - 1)
       } else break
@@ -183,7 +183,7 @@ export default async function DashboardPage() {
               <p className="text-sm text-pink-700 leading-relaxed">{latestNote.note}</p>
               <p className="text-xs text-pink-300 mt-1">
                 {new Date(latestNote.created_at).toLocaleDateString('zh-TW', {
-                  month: 'long', day: 'numeric',
+                  timeZone: 'Asia/Taipei', month: 'long', day: 'numeric',
                 })}
               </p>
             </div>
@@ -294,7 +294,7 @@ export default async function DashboardPage() {
                     )}
                     <p className="text-xs text-pink-300 mt-0.5">
                       {new Date(tx.created_at).toLocaleDateString('zh-TW', {
-                        month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit',
+                        timeZone: 'Asia/Taipei', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit',
                       })}
                     </p>
                   </div>

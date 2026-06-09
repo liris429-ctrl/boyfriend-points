@@ -156,7 +156,7 @@ export default function SpecialDatesClient({ dates: initial }: Props) {
         )}
         {dates.map((d) => {
           const dateObj = new Date(d.date + 'T00:00:00')
-          const formatted = dateObj.toLocaleDateString('zh-TW', { month: 'long', day: 'numeric' })
+          const formatted = dateObj.toLocaleDateString('zh-TW', { timeZone: 'Asia/Taipei', month: 'long', day: 'numeric' })
           return (
             <div key={d.id} className="bg-white rounded-2xl border border-pink-100 p-4 flex items-center gap-3">
               <span className="text-2xl">{d.emoji}</span>

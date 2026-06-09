@@ -176,7 +176,7 @@ export default function ManageRewardsClient({ initialRewards }: Props) {
               <p className="text-xs text-pink-500">{reward.points_required} 分</p>
               {reward.expires_at && (
                 <p className="text-xs text-orange-400">
-                  ⏰ {new Date(reward.expires_at) < new Date() ? '已到期' : `到期：${new Date(reward.expires_at).toLocaleDateString('zh-TW', { month: 'short', day: 'numeric' })}`}
+                  ⏰ {new Date(reward.expires_at) < new Date() ? '已到期' : `到期：${new Date(reward.expires_at).toLocaleDateString('zh-TW', { timeZone: 'Asia/Taipei', month: 'short', day: 'numeric' })}`}
                 </p>
               )}
             </div>

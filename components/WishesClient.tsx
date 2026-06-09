@@ -155,7 +155,7 @@ export default function WishesClient({ wishes, userId }: Props) {
                       )}
                       <p className="text-xs text-pink-300 mt-1">
                         {new Date(w.created_at).toLocaleDateString('zh-TW', {
-                          month: 'long', day: 'numeric',
+                          timeZone: 'Asia/Taipei', month: 'long', day: 'numeric',
                         })}
                       </p>
                     </div>

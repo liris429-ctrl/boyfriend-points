@@ -397,10 +397,10 @@ export default function AdminReviewClient({ requests, wishes, redemptions, admin
                   <p className="font-medium text-sm text-gray-700">{rd.reward_title}</p>
                   <p className="text-xs text-pink-400">{rd.profiles?.display_name} · 花了 {rd.points_spent} 分</p>
                   <p className="text-xs text-pink-300">
-                    {new Date(rd.created_at).toLocaleDateString('zh-TW', { month: 'long', day: 'numeric' })}
+                    {new Date(rd.created_at).toLocaleDateString('zh-TW', { timeZone: 'Asia/Taipei', month: 'long', day: 'numeric' })}
                   </p>
                   {rd.fulfilled && (
-                    <p className="text-xs text-green-500 mt-0.5">✅ 已兌現 {rd.fulfilled_at ? new Date(rd.fulfilled_at).toLocaleDateString('zh-TW', { month: 'short', day: 'numeric' }) : ''}</p>
+                    <p className="text-xs text-green-500 mt-0.5">✅ 已兌現 {rd.fulfilled_at ? new Date(rd.fulfilled_at).toLocaleDateString('zh-TW', { timeZone: 'Asia/Taipei', month: 'short', day: 'numeric' }) : ''}</p>
                   )}
                 </div>
                 {!rd.fulfilled ? (

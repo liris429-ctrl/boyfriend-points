@@ -40,7 +40,7 @@ export default function RewardsClient({ rewards, balance, userId, displayName }:
 
     const now = new Date()
     const dateStr = now.toLocaleDateString('zh-TW', {
-      year: 'numeric', month: 'long', day: 'numeric',
+      timeZone: 'Asia/Taipei', year: 'numeric', month: 'long', day: 'numeric',
     })
 
     const { error } = await supabase.from('redemptions').insert({
