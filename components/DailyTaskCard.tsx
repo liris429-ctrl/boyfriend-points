@@ -7,11 +7,12 @@ import type { DailyTask } from '@/lib/types'
 interface Props {
   task: DailyTask
   userId: string
+  alreadyRequested?: boolean
 }
 
-export default function DailyTaskCard({ task, userId }: Props) {
+export default function DailyTaskCard({ task, userId, alreadyRequested = false }: Props) {
   const supabase = createClient()
-  const [status, setStatus] = useState<'idle' | 'loading' | 'done'>('idle')
+  const [status, setStatus] = useState<'idle' | 'loading' | 'done'>(alreadyRequested ? 'done' : 'idle')
   const [error, setError] = useState<string | null>(null)
 
   async function handleComplete() {

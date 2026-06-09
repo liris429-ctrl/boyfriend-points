@@ -35,7 +35,7 @@ export default async function AdminPage() {
     supabase.from('profiles').select('*').eq('role', 'user'),
     supabase.from('point_transactions')
       .select('*, point_actions(title, emoji), profiles!point_transactions_user_id_fkey(display_name)')
-      .order('created_at', { ascending: false }).limit(8),
+      .order('created_at', { ascending: false }).limit(20),
     supabase.from('daily_tasks').select('*').eq('task_date', today).limit(1),
     supabase.from('special_dates').select('*'),
     supabase.from('point_transactions').select('user_id, points'),
@@ -111,7 +111,7 @@ export default async function AdminPage() {
               <p className="text-sm">還沒有給分紀錄</p>
             </div>
           ) : (
-            <div className="space-y-2">
+            <div className="space-y-2 max-h-80 overflow-y-auto pr-1">
               {(recentTx as unknown as PointTransaction[]).map((tx) => (
                 <div
                   key={tx.id}

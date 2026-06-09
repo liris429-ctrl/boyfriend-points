@@ -20,6 +20,7 @@ export default function ManageRewardsClient({ initialRewards }: Props) {
   const [editingId, setEditingId] = useState<string | null>(null)
   const [form, setForm] = useState({ title: '', emoji: '🎁', points_required: 50, expires_at: '' })
   const [loading, setLoading] = useState(false)
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null)
 
   function startAdd() {
     setForm({ title: '', emoji: '🎁', points_required: 50, expires_at: '' })
@@ -60,6 +61,13 @@ export default function ManageRewardsClient({ initialRewards }: Props) {
     setLoading(false)
     setShowForm(false)
     setEditingId(null)
+    router.refresh()
+  }
+
+  async function handleDelete(id: string) {
+    await supabase.from('rewards').delete().eq('id', id)
+    setRewards(rewards.filter((r) => r.id !== id))
+    setConfirmDeleteId(null)
     router.refresh()
   }
 
@@ -172,23 +180,48 @@ export default function ManageRewardsClient({ initialRewards }: Props) {
                 </p>
               )}
             </div>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => startEdit(reward)}
-                className="text-xs px-2 py-1 rounded-lg border border-pink-200 text-pink-600 hover:bg-pink-50 transition"
-              >
-                編輯
-              </button>
-              <button
-                onClick={() => toggleActive(reward)}
-                className={`text-xs px-2 py-1 rounded-lg border transition ${
-                  reward.active
-                    ? 'border-gray-200 text-gray-400 hover:bg-gray-50'
-                    : 'border-pink-200 text-pink-500 hover:bg-pink-50'
-                }`}
-              >
-                {reward.active ? '停用' : '啟用'}
-              </button>
+            <div className="flex items-center gap-1.5 shrink-0">
+              {confirmDeleteId === reward.id ? (
+                <>
+                  <button
+                    onClick={() => handleDelete(reward.id)}
+                    className="text-xs px-2 py-1 rounded-lg bg-red-500 text-white font-medium transition"
+                  >
+                    確定
+                  </button>
+                  <button
+                    onClick={() => setConfirmDeleteId(null)}
+                    className="text-xs px-2 py-1 rounded-lg border border-gray-200 text-gray-400 transition"
+                  >
+                    取消
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button
+                    onClick={() => startEdit(reward)}
+                    className="text-xs px-2 py-1 rounded-lg border border-pink-200 text-pink-600 hover:bg-pink-50 transition"
+                  >
+                    編輯
+                  </button>
+                  <button
+                    onClick={() => toggleActive(reward)}
+                    className={`text-xs px-2 py-1 rounded-lg border transition ${
+                      reward.active
+                        ? 'border-gray-200 text-gray-400 hover:bg-gray-50'
+                        : 'border-pink-200 text-pink-500 hover:bg-pink-50'
+                    }`}
+                  >
+                    {reward.active ? '停用' : '啟用'}
+                  </button>
+                  <button
+                    onClick={() => setConfirmDeleteId(reward.id)}
+                    className="text-xs px-2 py-1 rounded-lg border border-red-100 text-red-400 hover:bg-red-50 transition"
+                  >
+                    刪除
+                  </button>
+                </>
+              )}
             </div>
           </div>
         ))}

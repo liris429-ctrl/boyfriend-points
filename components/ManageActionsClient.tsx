@@ -20,6 +20,7 @@ export default function ManageActionsClient({ initialActions }: Props) {
   const [editingId, setEditingId] = useState<string | null>(null)
   const [form, setForm] = useState({ title: '', emoji: '⭐', points: 10 })
   const [loading, setLoading] = useState(false)
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null)
 
   function startAdd() {
     setForm({ title: '', emoji: '⭐', points: 10 })
@@ -57,6 +58,13 @@ export default function ManageActionsClient({ initialActions }: Props) {
     setLoading(false)
     setShowForm(false)
     setEditingId(null)
+    router.refresh()
+  }
+
+  async function handleDelete(id: string) {
+    await supabase.from('point_actions').delete().eq('id', id)
+    setActions(actions.filter((a) => a.id !== id))
+    setConfirmDeleteId(null)
     router.refresh()
   }
 
@@ -154,23 +162,48 @@ export default function ManageActionsClient({ initialActions }: Props) {
               <p className="font-medium text-sm text-gray-700">{action.title}</p>
               <p className="text-xs text-pink-500">+{action.points} 分</p>
             </div>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => startEdit(action)}
-                className="text-xs px-2 py-1 rounded-lg border border-pink-200 text-pink-600 hover:bg-pink-50 transition"
-              >
-                編輯
-              </button>
-              <button
-                onClick={() => toggleActive(action)}
-                className={`text-xs px-2 py-1 rounded-lg border transition ${
-                  action.active
-                    ? 'border-gray-200 text-gray-400 hover:bg-gray-50'
-                    : 'border-pink-200 text-pink-500 hover:bg-pink-50'
-                }`}
-              >
-                {action.active ? '停用' : '啟用'}
-              </button>
+            <div className="flex items-center gap-1.5 shrink-0">
+              {confirmDeleteId === action.id ? (
+                <>
+                  <button
+                    onClick={() => handleDelete(action.id)}
+                    className="text-xs px-2 py-1 rounded-lg bg-red-500 text-white font-medium transition"
+                  >
+                    確定
+                  </button>
+                  <button
+                    onClick={() => setConfirmDeleteId(null)}
+                    className="text-xs px-2 py-1 rounded-lg border border-gray-200 text-gray-400 transition"
+                  >
+                    取消
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button
+                    onClick={() => startEdit(action)}
+                    className="text-xs px-2 py-1 rounded-lg border border-pink-200 text-pink-600 hover:bg-pink-50 transition"
+                  >
+                    編輯
+                  </button>
+                  <button
+                    onClick={() => toggleActive(action)}
+                    className={`text-xs px-2 py-1 rounded-lg border transition ${
+                      action.active
+                        ? 'border-gray-200 text-gray-400 hover:bg-gray-50'
+                        : 'border-pink-200 text-pink-500 hover:bg-pink-50'
+                    }`}
+                  >
+                    {action.active ? '停用' : '啟用'}
+                  </button>
+                  <button
+                    onClick={() => setConfirmDeleteId(action.id)}
+                    className="text-xs px-2 py-1 rounded-lg border border-red-100 text-red-400 hover:bg-red-50 transition"
+                  >
+                    刪除
+                  </button>
+                </>
+              )}
             </div>
           </div>
         ))}

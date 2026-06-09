@@ -168,9 +168,15 @@ export default function RewardsClient({ rewards, balance, userId, displayName }:
                 <span className="text-xs text-pink-400">⭐ 分</span>
               </div>
               {!canAfford && (
-                <p className="text-xs text-gray-400 mt-0.5">
-                  還差 {reward.points_required - currentBalance} 分
-                </p>
+                <div className="mt-1.5">
+                  <div className="w-full bg-gray-100 rounded-full h-1.5">
+                    <div
+                      className="bg-pink-400 h-1.5 rounded-full transition-all"
+                      style={{ width: `${Math.min(100, Math.round((currentBalance / reward.points_required) * 100))}%` }}
+                    />
+                  </div>
+                  <p className="text-xs text-gray-400 mt-0.5">還差 {reward.points_required - currentBalance} 分</p>
+                </div>
               )}
             </div>
 

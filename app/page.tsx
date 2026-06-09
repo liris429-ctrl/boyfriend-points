@@ -60,6 +60,19 @@ export default async function DashboardPage() {
   ])
   const todayTask = (todayTaskRows?.[0] ?? null) as DailyTask | null
 
+  // Check if user already submitted today's task
+  let taskAlreadyRequested = false
+  if (todayTask) {
+    const { data: existingReq } = await supabase
+      .from('point_requests')
+      .select('id')
+      .eq('user_id', user.id)
+      .eq('title', `完成每日任務：${todayTask.title}`)
+      .gte('created_at', `${today}T00:00:00`)
+      .limit(1)
+    taskAlreadyRequested = (existingReq ?? []).length > 0
+  }
+
   // Check if today is a special date
   const todaySpecial = ((specialDates ?? []) as SpecialDate[]).find((d) => {
     const dObj = new Date(d.date + 'T00:00:00')
@@ -159,7 +172,7 @@ export default async function DashboardPage() {
         )}
 
         {/* Today's daily task */}
-        {todayTask && <DailyTaskCard task={todayTask} userId={user.id} />}
+        {todayTask && <DailyTaskCard task={todayTask} userId={user.id} alreadyRequested={taskAlreadyRequested} />}
 
         {/* Love note from admin */}
         {latestNote && (
