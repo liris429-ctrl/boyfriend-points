@@ -40,6 +40,7 @@ export default function Navbar({ role, displayName, pendingCount }: NavbarProps)
       { href: '/', label: '首頁', emoji: '🏠' },
       { href: '/rewards', label: '獎勵', emoji: '🎁' },
       { href: '/messages', label: '留言', emoji: '💬' },
+      { href: '/diary', label: '日記', emoji: '📔' },
       { href: '/history', label: '紀錄', emoji: '📋' },
     ]
 
@@ -63,7 +64,7 @@ export default function Navbar({ role, displayName, pendingCount }: NavbarProps)
         </header>
 
         <nav className="fixed bottom-0 inset-x-0 z-50 bg-white border-t border-pink-100">
-          <div className="max-w-lg mx-auto grid grid-cols-4 h-16">
+          <div className="max-w-lg mx-auto grid grid-cols-5 h-16">
             {userTabs.map((tab) => {
               const active = pathname === tab.href
               return (
@@ -97,6 +98,7 @@ export default function Navbar({ role, displayName, pendingCount }: NavbarProps)
   ]
 
   const adminMore: NavLink[] = [
+    { href: '/diary', label: '情侶日記', emoji: '📔', badge: 0 },
     { href: '/messages', label: '留言板', emoji: '💬', badge: 0 },
     { href: '/admin/actions', label: '積分項目', emoji: '📝', badge: 0 },
     { href: '/admin/rewards', label: '獎勵項目', emoji: '🎁', badge: 0 },

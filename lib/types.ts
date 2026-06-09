@@ -112,3 +112,12 @@ export interface MarqueeMessage {
   sort_order: number
   created_at: string
 }
+
+export interface DiaryEntry {
+  id: string
+  author_id: string
+  content: string
+  photo_url: string | null
+  created_at: string
+  profiles?: { display_name: string; role: string } | null
+}
