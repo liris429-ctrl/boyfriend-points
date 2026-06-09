@@ -113,6 +113,15 @@ export interface MarqueeMessage {
   created_at: string
 }
 
+export interface DiaryComment {
+  id: string
+  entry_id: string
+  author_id: string
+  content: string
+  created_at: string
+  profiles?: { display_name: string; role: string } | null
+}
+
 export interface DiaryEntry {
   id: string
   author_id: string
@@ -120,4 +129,5 @@ export interface DiaryEntry {
   photo_url: string | null
   created_at: string
   profiles?: { display_name: string; role: string } | null
+  diary_comments?: DiaryComment[]
 }

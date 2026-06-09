@@ -29,7 +29,12 @@ export default async function DiaryPage() {
 
   const { data: entries } = await supabase
     .from('diary_entries')
-    .select('*, profiles!diary_entries_author_id_fkey(display_name, role)')
+    .select(`
+      *,
+      profiles!diary_entries_author_id_fkey(display_name, role),
+      diary_comments(id, entry_id, author_id, content, created_at,
+        profiles!diary_comments_author_id_fkey(display_name, role))
+    `)
     .order('created_at', { ascending: false })
     .limit(50)
 

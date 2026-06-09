@@ -3,7 +3,7 @@
 import { useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import type { DiaryEntry } from '@/lib/types'
+import type { DiaryEntry, DiaryComment } from '@/lib/types'
 
 interface Props {
   entries: DiaryEntry[]
@@ -50,6 +50,15 @@ export default function DiaryClient({ entries: initial, userId, userRole }: Prop
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null)
   const [fullscreenPhoto, setFullscreenPhoto] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
+
+  // Comments state
+  const [commentsByEntry, setCommentsByEntry] = useState<Record<string, DiaryComment[]>>(
+    () => Object.fromEntries(initial.map(e => [e.id, e.diary_comments ?? []]))
+  )
+  const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set())
+  const [commentTexts, setCommentTexts] = useState<Record<string, string>>({})
+  const [submittingCommentId, setSubmittingCommentId] = useState<string | null>(null)
+  const [confirmDeleteCommentId, setConfirmDeleteCommentId] = useState<string | null>(null)
 
   function handlePhotoSelect(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
@@ -111,6 +120,7 @@ export default function DiaryClient({ entries: initial, userId, userRole }: Prop
     }
     if (data) {
       setEntries([data as DiaryEntry, ...entries])
+      setCommentsByEntry(prev => ({ ...prev, [data.id]: [] }))
       closeForm()
       router.refresh()
     }
@@ -125,6 +135,45 @@ export default function DiaryClient({ entries: initial, userId, userRole }: Prop
     await supabase.from('diary_entries').delete().eq('id', id)
     setEntries(entries.filter((e) => e.id !== id))
     setConfirmDeleteId(null)
+  }
+
+  function toggleComments(entryId: string) {
+    setExpandedIds(prev => {
+      const next = new Set(prev)
+      if (next.has(entryId)) next.delete(entryId)
+      else next.add(entryId)
+      return next
+    })
+  }
+
+  async function handleAddComment(entryId: string) {
+    const text = commentTexts[entryId]?.trim()
+    if (!text) return
+    setSubmittingCommentId(entryId)
+
+    const { data, error: err } = await supabase
+      .from('diary_comments')
+      .insert({ entry_id: entryId, author_id: userId, content: text })
+      .select('*, profiles!diary_comments_author_id_fkey(display_name, role)')
+      .single()
+
+    setSubmittingCommentId(null)
+    if (err || !data) return
+
+    setCommentsByEntry(prev => ({
+      ...prev,
+      [entryId]: [...(prev[entryId] ?? []), data as DiaryComment],
+    }))
+    setCommentTexts(prev => ({ ...prev, [entryId]: '' }))
+  }
+
+  async function handleDeleteComment(commentId: string, entryId: string) {
+    await supabase.from('diary_comments').delete().eq('id', commentId)
+    setCommentsByEntry(prev => ({
+      ...prev,
+      [entryId]: (prev[entryId] ?? []).filter(c => c.id !== commentId),
+    }))
+    setConfirmDeleteCommentId(null)
   }
 
   return (
@@ -218,9 +267,12 @@ export default function DiaryClient({ entries: initial, userId, userRole }: Prop
             const isOwn = entry.author_id === userId
             const isAuthorAdmin = entry.profiles?.role === 'admin'
             const canDelete = isOwn || userRole === 'admin'
+            const comments = commentsByEntry[entry.id] ?? []
+            const isExpanded = expandedIds.has(entry.id)
 
             return (
               <div key={entry.id} className="bg-white rounded-2xl border border-pink-100 p-4">
+                {/* Entry header */}
                 <div className="flex items-start justify-between mb-2">
                   <div className="flex items-center gap-1.5">
                     <span>{isAuthorAdmin ? '👑' : '💙'}</span>
@@ -253,6 +305,7 @@ export default function DiaryClient({ entries: initial, userId, userRole }: Prop
                   )}
                 </div>
 
+                {/* Entry content */}
                 <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">{entry.content}</p>
 
                 {entry.photo_url && (
@@ -267,6 +320,87 @@ export default function DiaryClient({ entries: initial, userId, userRole }: Prop
                     />
                   </div>
                 )}
+
+                {/* Comments section */}
+                <div className="mt-3 pt-3 border-t border-pink-50">
+                  <button
+                    onClick={() => toggleComments(entry.id)}
+                    className="flex items-center gap-1 text-xs text-pink-400 hover:text-pink-600 transition"
+                  >
+                    <span>💬</span>
+                    <span>{comments.length > 0 ? `${comments.length} 則留言` : '留言'}</span>
+                    <span className={`transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`}>▾</span>
+                  </button>
+
+                  {isExpanded && (
+                    <div className="mt-2 space-y-2">
+                      {comments.map(comment => {
+                        const isCommentAdmin = comment.profiles?.role === 'admin'
+                        const canDeleteComment = comment.author_id === userId || userRole === 'admin'
+                        return (
+                          <div key={comment.id} className="flex items-start gap-2">
+                            <span className="text-sm pt-1">{isCommentAdmin ? '👑' : '💙'}</span>
+                            <div className="flex-1 min-w-0 bg-pink-50 rounded-xl px-3 py-2">
+                              <div className="flex items-center gap-1.5 mb-0.5">
+                                <span className="text-xs font-semibold text-gray-600">{comment.profiles?.display_name}</span>
+                                <span className="text-xs text-pink-300">
+                                  {new Date(comment.created_at).toLocaleDateString('zh-TW', {
+                                    timeZone: 'Asia/Taipei', month: 'short', day: 'numeric',
+                                    hour: '2-digit', minute: '2-digit',
+                                  })}
+                                </span>
+                              </div>
+                              <p className="text-xs text-gray-700 leading-relaxed">{comment.content}</p>
+                            </div>
+                            {canDeleteComment && (
+                              confirmDeleteCommentId === comment.id ? (
+                                <div className="flex gap-1 items-center shrink-0 pt-1">
+                                  <button
+                                    onClick={() => handleDeleteComment(comment.id, entry.id)}
+                                    className="text-xs px-1.5 py-0.5 rounded bg-red-500 text-white"
+                                  >確定</button>
+                                  <button
+                                    onClick={() => setConfirmDeleteCommentId(null)}
+                                    className="text-xs px-1.5 py-0.5 rounded border border-gray-200 text-gray-400"
+                                  >取消</button>
+                                </div>
+                              ) : (
+                                <button
+                                  onClick={() => setConfirmDeleteCommentId(comment.id)}
+                                  className="text-xs text-gray-300 hover:text-red-400 transition shrink-0 pt-1.5"
+                                >✕</button>
+                              )
+                            )}
+                          </div>
+                        )
+                      })}
+
+                      {/* Comment input */}
+                      <div className="flex gap-2 pt-1">
+                        <input
+                          value={commentTexts[entry.id] ?? ''}
+                          onChange={e => setCommentTexts(prev => ({ ...prev, [entry.id]: e.target.value }))}
+                          onKeyDown={e => {
+                            if (e.key === 'Enter' && !e.shiftKey) {
+                              e.preventDefault()
+                              handleAddComment(entry.id)
+                            }
+                          }}
+                          placeholder="留言…"
+                          maxLength={200}
+                          className="flex-1 min-w-0 px-3 py-1.5 rounded-xl border border-pink-200 text-xs focus:outline-none focus:border-pink-400"
+                        />
+                        <button
+                          onClick={() => handleAddComment(entry.id)}
+                          disabled={!commentTexts[entry.id]?.trim() || submittingCommentId === entry.id}
+                          className="px-3 py-1.5 rounded-xl bg-pink-500 text-white text-xs font-semibold hover:bg-pink-600 disabled:opacity-50 transition shrink-0"
+                        >
+                          {submittingCommentId === entry.id ? '…' : '送出'}
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
             )
           })}
