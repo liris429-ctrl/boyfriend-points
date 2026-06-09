@@ -2,7 +2,7 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import Navbar from '@/components/Navbar'
 import DiaryClient from '@/components/DiaryClient'
-import type { DiaryEntry } from '@/lib/types'
+import type { DiaryEntry, DiaryComment } from '@/lib/types'
 
 export default async function DiaryPage() {
   const supabase = await createClient()
@@ -27,16 +27,35 @@ export default async function DiaryPage() {
     pendingCount = (a ?? 0) + (b ?? 0) + (c ?? 0)
   }
 
+  // Fetch entries and their authors — keep this simple so the profiles join is reliable
   const { data: entries } = await supabase
     .from('diary_entries')
-    .select(`
-      *,
-      profiles!diary_entries_author_id_fkey(display_name, role),
-      diary_comments(id, entry_id, author_id, content, created_at,
-        profiles!diary_comments_author_id_fkey(display_name, role))
-    `)
+    .select('*, profiles(display_name, role)')
     .order('created_at', { ascending: false })
     .limit(50)
+
+  // Fetch comments separately — safe if diary_comments table not yet created
+  const entryList = entries ?? []
+  const { data: allComments } = entryList.length > 0
+    ? await supabase
+        .from('diary_comments')
+        .select('*, profiles(display_name, role)')
+        .in('entry_id', entryList.map(e => e.id))
+        .order('created_at', { ascending: true })
+    : { data: [] }
+
+  // Group comments by entry
+  const commentMap: Record<string, DiaryComment[]> = {}
+  for (const c of (allComments ?? [])) {
+    const comment = c as DiaryComment
+    if (!commentMap[comment.entry_id]) commentMap[comment.entry_id] = []
+    commentMap[comment.entry_id].push(comment)
+  }
+
+  const entriesWithComments: DiaryEntry[] = entryList.map(e => ({
+    ...(e as DiaryEntry),
+    diary_comments: commentMap[e.id] ?? [],
+  }))
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -51,7 +70,7 @@ export default async function DiaryPage() {
         </div>
 
         <DiaryClient
-          entries={(entries ?? []) as DiaryEntry[]}
+          entries={entriesWithComments}
           userId={user.id}
           userRole={profile.role}
         />
