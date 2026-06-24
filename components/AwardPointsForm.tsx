@@ -48,6 +48,10 @@ export default function AwardPointsForm({ actions, users, adminId, specialDates 
 
   // Award mode
   const [selectedAction, setSelectedAction] = useState<PointAction | null>(null)
+  const [isCustom, setIsCustom] = useState(false)
+  const [customEmoji, setCustomEmoji] = useState('⭐')
+  const [customTitle, setCustomTitle] = useState('')
+  const [customPoints, setCustomPoints] = useState('')
   const [selectedUserId, setSelectedUserId] = useState(users[0]?.id ?? '')
   const [message, setMessage] = useState('')
 
@@ -65,6 +69,37 @@ export default function AwardPointsForm({ actions, users, adminId, specialDates 
 
   async function handleAward(e: React.FormEvent) {
     e.preventDefault()
+    if (isCustom) {
+      const pts = parseInt(customPoints)
+      if (!pts || pts <= 0 || !customTitle.trim() || !selectedUserId) return
+      setLoading(true)
+      const multiplier = todaySpecial ? todaySpecial.bonus_multiplier : 1
+      const finalPoints = Math.round(pts * multiplier)
+      const { error } = await supabase.from('point_transactions').insert({
+        user_id: selectedUserId,
+        action_id: null,
+        points: finalPoints,
+        note: `${customEmoji.trim() || '⭐'} ${customTitle.trim()}`,
+        awarded_by: adminId,
+      })
+      setLoading(false)
+      if (!error) {
+        setShareResult({
+          userName: selectedUser?.display_name ?? '男友',
+          points: finalPoints,
+          actionEmoji: customEmoji.trim() || '⭐',
+          actionTitle: customTitle.trim(),
+          message: '',
+        })
+        setCustomTitle('')
+        setCustomPoints('')
+        setCustomEmoji('⭐')
+        setIsCustom(false)
+        router.refresh()
+      }
+      return
+    }
+
     if (!selectedAction || !selectedUserId) return
     setLoading(true)
 
@@ -296,9 +331,9 @@ export default function AwardPointsForm({ actions, users, adminId, specialDates 
                       <button
                         key={action.id}
                         type="button"
-                        onClick={() => setSelectedAction(action)}
+                        onClick={() => { setSelectedAction(action); setIsCustom(false) }}
                         className={`flex items-center gap-2 p-3 rounded-xl border-2 text-left transition-all ${
-                          selectedAction?.id === action.id
+                          !isCustom && selectedAction?.id === action.id
                             ? 'border-pink-400 bg-pink-50'
                             : 'border-pink-100 hover:border-pink-300'
                         }`}
@@ -310,7 +345,61 @@ export default function AwardPointsForm({ actions, users, adminId, specialDates 
                         </div>
                       </button>
                     ))}
+                    {/* 臨時給分 */}
+                    <button
+                      type="button"
+                      onClick={() => { setIsCustom(true); setSelectedAction(null) }}
+                      className={`flex items-center gap-2 p-3 rounded-xl border-2 text-left transition-all ${
+                        isCustom
+                          ? 'border-purple-400 bg-purple-50'
+                          : 'border-dashed border-pink-200 hover:border-pink-400'
+                      }`}
+                    >
+                      <span className="text-xl">✍️</span>
+                      <div className="min-w-0">
+                        <p className="text-xs font-medium text-gray-700">臨時給分</p>
+                        <p className="text-xs text-purple-400">自訂</p>
+                      </div>
+                    </button>
                   </div>
+
+                  {/* 臨時給分輸入區 */}
+                  {isCustom && (
+                    <div className="bg-purple-50 rounded-xl p-3 space-y-2 border border-purple-200">
+                      <p className="text-xs font-semibold text-purple-600">臨時給分設定</p>
+                      <div className="flex gap-2">
+                        <input
+                          type="text"
+                          value={customEmoji}
+                          onChange={(e) => setCustomEmoji(e.target.value)}
+                          maxLength={2}
+                          className="w-14 px-2 py-2 rounded-xl border border-purple-200 text-center text-lg focus:outline-none focus:border-purple-400"
+                          placeholder="⭐"
+                        />
+                        <input
+                          type="text"
+                          value={customTitle}
+                          onChange={(e) => setCustomTitle(e.target.value)}
+                          maxLength={20}
+                          className="flex-1 px-3 py-2 rounded-xl border border-purple-200 text-sm focus:outline-none focus:border-purple-400"
+                          placeholder="事件名稱"
+                        />
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-purple-400 text-sm font-bold">+</span>
+                        <input
+                          type="number"
+                          value={customPoints}
+                          onChange={(e) => setCustomPoints(e.target.value)}
+                          min="1"
+                          max="999"
+                          className="w-full px-3 py-2 rounded-xl border border-purple-200 text-sm focus:outline-none focus:border-purple-400"
+                          placeholder="積分數量"
+                        />
+                        <span className="text-purple-400 text-sm whitespace-nowrap">分</span>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -330,12 +419,14 @@ export default function AwardPointsForm({ actions, users, adminId, specialDates 
 
               <button
                 type="submit"
-                disabled={!selectedAction || loading}
+                disabled={loading || (isCustom ? (!customTitle.trim() || !customPoints) : !selectedAction)}
                 className="w-full py-3 rounded-xl bg-pink-500 text-white font-semibold hover:bg-pink-600 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {loading ? '送出中...' : selectedAction
-                  ? `給予 +${Math.round(selectedAction.points * (todaySpecial?.bonus_multiplier ?? 1))} 積分 💕${todaySpecial ? ` (×${todaySpecial.bonus_multiplier})` : ''}`
-                  : '給予積分 💕'}
+                {loading ? '送出中...' : isCustom
+                  ? `給予 +${customPoints ? Math.round(parseInt(customPoints) * (todaySpecial?.bonus_multiplier ?? 1)) : '?'} 積分 ✍️${todaySpecial ? ` (×${todaySpecial.bonus_multiplier})` : ''}`
+                  : selectedAction
+                    ? `給予 +${Math.round(selectedAction.points * (todaySpecial?.bonus_multiplier ?? 1))} 積分 💕${todaySpecial ? ` (×${todaySpecial.bonus_multiplier})` : ''}`
+                    : '給予積分 💕'}
               </button>
             </form>
           ) : (

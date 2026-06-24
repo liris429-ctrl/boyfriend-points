@@ -123,9 +123,9 @@ export default async function AdminPage() {
                   <div className="text-xl">{tx.points < 0 ? '📉' : (tx.point_actions?.emoji ?? '⭐')}</div>
                   <div className="flex-1 min-w-0">
                     <p className="font-medium text-sm text-gray-700 truncate">
-                      {tx.points < 0 ? '扣點' : (tx.point_actions?.title ?? '手動給分')}
+                      {tx.points < 0 ? '扣點' : (tx.point_actions?.title ?? tx.note ?? '手動給分')}
                     </p>
-                    {tx.note && <p className="text-xs text-gray-400 truncate">{tx.note}</p>}
+                    {tx.note && tx.point_actions && <p className="text-xs text-gray-400 truncate">{tx.note}</p>}
                     <p className="text-xs text-pink-300">
                       {tx.profiles?.display_name} ·{' '}
                       {new Date(tx.created_at).toLocaleDateString('zh-TW', {

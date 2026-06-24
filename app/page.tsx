@@ -290,9 +290,9 @@ export default async function DashboardPage() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="font-medium text-sm text-gray-700 truncate">
-                      {tx.points < 0 ? '扣點' : (tx.point_actions?.title ?? '手動給分')}
+                      {tx.points < 0 ? '扣點' : (tx.point_actions?.title ?? tx.note ?? '手動給分')}
                     </p>
-                    {tx.note && (
+                    {tx.note && tx.point_actions && (
                       <p className="text-xs text-gray-400 truncate">{tx.note}</p>
                     )}
                     <p className="text-xs text-pink-300 mt-0.5">
