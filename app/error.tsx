@@ -14,7 +14,7 @@ export default function Error({
   }, [error])
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
+    <div className="min-h-dvh flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl border border-red-100 p-6 max-w-sm w-full text-center">
         <div className="text-4xl mb-3">⚠️</div>
         <h2 className="font-bold text-red-600 mb-2">頁面發生錯誤</h2>

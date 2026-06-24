@@ -5,10 +5,22 @@
   --foreground: #3d1a24;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: 'Noto Sans TC', 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+:focus-visible {
+  outline: 2px solid #f472b6;
+  outline-offset: 2px;
+  border-radius: 6px;
 }
 
 @keyframes marquee-scroll {

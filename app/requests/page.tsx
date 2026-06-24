@@ -24,7 +24,7 @@ export default async function RequestsPage() {
     .order('created_at', { ascending: false })
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-dvh flex flex-col">
       <Navbar role={profile.role} displayName={profile.display_name} />
 
       <main className="flex-1 max-w-lg mx-auto w-full p-4 pb-24 space-y-5">

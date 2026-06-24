@@ -116,34 +116,37 @@ export default async function DashboardPage() {
   const latestNote = latestNoteRows?.[0] ?? null
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-dvh flex flex-col">
       <Navbar role={profile.role} displayName={profile.display_name} />
 
       <main className="flex-1 max-w-lg mx-auto w-full p-4 pb-24 space-y-4">
         {/* Balance Card */}
-        <div className="bg-gradient-to-br from-pink-400 to-rose-400 rounded-3xl p-6 text-white text-center shadow-md mt-2">
-          <p className="text-pink-100 text-sm mb-1">目前積分</p>
-          <div className="text-7xl font-bold my-2">{balance}</div>
-          <p className="text-pink-100 text-sm">⭐ 分</p>
-          <div className="flex justify-center gap-6 mt-4 text-xs text-pink-100">
-            <div>
-              <div className="text-white font-semibold">{awarded}</div>
-              <div>累積獲得</div>
+        <div className="relative overflow-hidden bg-gradient-to-br from-pink-400 via-pink-500 to-rose-500 rounded-3xl p-6 text-white text-center mt-2 shadow-lg shadow-pink-300/40">
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_0%,rgba(255,255,255,0.18)_0%,transparent_100%)] pointer-events-none" />
+          <div className="relative">
+            <p className="text-pink-100 text-xs font-medium tracking-widest uppercase mb-2">目前積分</p>
+            <div className="text-7xl font-bold leading-none my-2 tabular-nums">{balance}</div>
+            <p className="text-pink-200 text-sm">⭐ 分</p>
+            <div className="flex justify-center gap-6 mt-5 text-xs text-pink-100">
+              <div>
+                <div className="text-white font-semibold tabular-nums">{awarded}</div>
+                <div>累積獲得</div>
+              </div>
+              <div className="border-l border-pink-300/60" />
+              <div>
+                <div className="text-white font-semibold tabular-nums">{spent}</div>
+                <div>已兌換</div>
+              </div>
+              {deductions < 0 && (
+                <>
+                  <div className="border-l border-pink-300/60" />
+                  <div>
+                    <div className="text-white font-semibold tabular-nums">{Math.abs(deductions)}</div>
+                    <div>已扣除</div>
+                  </div>
+                </>
+              )}
             </div>
-            <div className="border-l border-pink-300" />
-            <div>
-              <div className="text-white font-semibold">{spent}</div>
-              <div>已兌換</div>
-            </div>
-            {deductions < 0 && (
-              <>
-                <div className="border-l border-pink-300" />
-                <div>
-                  <div className="text-white font-semibold">{Math.abs(deductions)}</div>
-                  <div>已扣除</div>
-                </div>
-              </>
-            )}
           </div>
         </div>
 
@@ -191,7 +194,7 @@ export default async function DashboardPage() {
         )}
 
         {/* Milestone progress */}
-        <div className="bg-white rounded-2xl border border-pink-100 p-4">
+        <div className="bg-white rounded-2xl p-4 shadow-sm shadow-pink-100/80">
           <div className="flex items-center justify-between mb-2">
             <h2 className="text-sm font-semibold text-pink-700 flex items-center gap-1">
               <span>🏆</span> 積分里程碑
@@ -236,28 +239,28 @@ export default async function DashboardPage() {
         <div className="grid grid-cols-2 gap-3">
           <a
             href="/rewards"
-            className="bg-white rounded-2xl p-4 border border-pink-100 shadow-sm flex flex-col items-center gap-2 hover:border-pink-300 transition active:scale-95"
+            className="bg-white rounded-2xl p-4 shadow-sm shadow-pink-100 flex flex-col items-center gap-2 hover:shadow-md hover:shadow-pink-200/60 transition-all active:scale-95"
           >
             <span className="text-3xl">🎁</span>
             <span className="text-sm font-medium text-pink-700">兌換獎勵</span>
           </a>
           <a
             href="/history"
-            className="bg-white rounded-2xl p-4 border border-pink-100 shadow-sm flex flex-col items-center gap-2 hover:border-pink-300 transition active:scale-95"
+            className="bg-white rounded-2xl p-4 shadow-sm shadow-pink-100 flex flex-col items-center gap-2 hover:shadow-md hover:shadow-pink-200/60 transition-all active:scale-95"
           >
             <span className="text-3xl">📋</span>
             <span className="text-sm font-medium text-pink-700">積分紀錄</span>
           </a>
           <a
             href="/requests"
-            className="bg-white rounded-2xl p-4 border border-pink-100 shadow-sm flex flex-col items-center gap-2 hover:border-pink-300 transition active:scale-95"
+            className="bg-white rounded-2xl p-4 shadow-sm shadow-pink-100 flex flex-col items-center gap-2 hover:shadow-md hover:shadow-pink-200/60 transition-all active:scale-95"
           >
             <span className="text-3xl">🙋</span>
             <span className="text-sm font-medium text-pink-700">申請給點</span>
           </a>
           <a
             href="/wishes"
-            className="bg-white rounded-2xl p-4 border border-pink-100 shadow-sm flex flex-col items-center gap-2 hover:border-pink-300 transition active:scale-95"
+            className="bg-white rounded-2xl p-4 shadow-sm shadow-pink-100 flex flex-col items-center gap-2 hover:shadow-md hover:shadow-pink-200/60 transition-all active:scale-95"
           >
             <span className="text-3xl">✨</span>
             <span className="text-sm font-medium text-pink-700">許願獎勵</span>
@@ -271,7 +274,7 @@ export default async function DashboardPage() {
           </h2>
 
           {(!transactions || transactions.length === 0) ? (
-            <div className="bg-white rounded-2xl border border-pink-100 p-8 text-center text-pink-300">
+            <div className="bg-white rounded-2xl p-8 text-center text-pink-300 shadow-sm shadow-pink-100/80">
               <div className="text-4xl mb-2">🌸</div>
               <p className="text-sm">還沒有積分紀錄，繼續加油！</p>
             </div>
@@ -280,7 +283,7 @@ export default async function DashboardPage() {
               {(transactions as unknown as PointTransaction[]).map((tx) => (
                 <div
                   key={tx.id}
-                  className="bg-white rounded-2xl border border-pink-100 p-4 flex items-center gap-3"
+                  className="bg-white rounded-2xl p-4 flex items-center gap-3 shadow-sm shadow-pink-100/80"
                 >
                   <div className="text-2xl">
                     {tx.points < 0 ? '📉' : (tx.point_actions?.emoji ?? '⭐')}

@@ -57,7 +57,7 @@ export default async function AdminPage() {
   })
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-dvh flex flex-col">
       <Navbar role={profile.role} displayName={profile.display_name} pendingCount={pendingCount} />
 
       <main className="flex-1 max-w-lg mx-auto w-full p-4 space-y-5">
@@ -67,11 +67,14 @@ export default async function AdminPage() {
             {userBalances.map((u) => (
               <div
                 key={u.id}
-                className="flex-1 bg-gradient-to-br from-pink-400 to-rose-400 rounded-2xl p-4 text-white"
+                className="relative overflow-hidden flex-1 bg-gradient-to-br from-pink-400 via-pink-500 to-rose-500 rounded-2xl p-4 text-white shadow-md shadow-pink-300/40"
               >
-                <p className="text-pink-100 text-xs mb-1">💙 {u.display_name} 的積分</p>
-                <p className="text-4xl font-bold leading-none">{u.balance}</p>
-                <p className="text-pink-200 text-xs mt-1">累積獲得 {u.awarded} 分</p>
+                <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_0%,rgba(255,255,255,0.15)_0%,transparent_100%)] pointer-events-none" />
+                <div className="relative">
+                  <p className="text-pink-100 text-xs mb-1">💙 {u.display_name} 的積分</p>
+                  <p className="text-4xl font-bold leading-none tabular-nums">{u.balance}</p>
+                  <p className="text-pink-200 text-xs mt-1">累積獲得 {u.awarded} 分</p>
+                </div>
               </div>
             ))}
           </div>
