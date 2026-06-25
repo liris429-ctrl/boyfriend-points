@@ -152,30 +152,35 @@ export default function RewardsClient({ rewards, balance, userId, displayName }:
       {rewards.map((reward) => {
         const canAfford = currentBalance >= reward.points_required
         const isLoading = loading === reward.id
+        const pct = Math.min(100, Math.round((currentBalance / reward.points_required) * 100))
 
         return (
           <div
             key={reward.id}
-            className={`bg-white rounded-2xl border p-4 flex items-center gap-4 transition ${
-              canAfford ? 'border-pink-100' : 'border-gray-100 opacity-60'
+            className={`rounded-2xl p-4 flex items-center gap-4 transition-all ${
+              canAfford
+                ? 'bg-white shadow-md shadow-pink-200/50'
+                : 'bg-white/70 shadow-sm shadow-gray-100'
             }`}
           >
-            <div className="text-3xl">{reward.emoji}</div>
+            <div className={`text-3xl ${!canAfford ? 'opacity-50' : ''}`}>{reward.emoji}</div>
             <div className="flex-1 min-w-0">
-              <p className="font-semibold text-gray-700">{reward.title}</p>
+              <p className={`font-semibold ${canAfford ? 'text-gray-800' : 'text-gray-400'}`}>{reward.title}</p>
               <div className="flex items-center gap-1 mt-0.5">
-                <span className="text-pink-500 text-sm font-medium">{reward.points_required}</span>
-                <span className="text-xs text-pink-400">⭐ 分</span>
+                <span className={`text-sm font-semibold tabular-nums ${canAfford ? 'text-pink-500' : 'text-gray-400'}`}>
+                  {reward.points_required}
+                </span>
+                <span className={`text-xs ${canAfford ? 'text-pink-400' : 'text-gray-300'}`}>⭐ 分</span>
               </div>
               {!canAfford && (
-                <div className="mt-1.5">
-                  <div className="w-full bg-gray-100 rounded-full h-1.5">
+                <div className="mt-2">
+                  <div className="w-full bg-gray-100 rounded-full h-1">
                     <div
-                      className="bg-pink-400 h-1.5 rounded-full transition-all"
-                      style={{ width: `${Math.min(100, Math.round((currentBalance / reward.points_required) * 100))}%` }}
+                      className="bg-pink-300 h-1 rounded-full transition-all"
+                      style={{ width: `${pct}%` }}
                     />
                   </div>
-                  <p className="text-xs text-gray-400 mt-0.5">還差 {reward.points_required - currentBalance} 分</p>
+                  <p className="text-xs text-gray-300 mt-1">還差 {reward.points_required - currentBalance} 分</p>
                 </div>
               )}
             </div>
@@ -183,13 +188,13 @@ export default function RewardsClient({ rewards, balance, userId, displayName }:
             <button
               onClick={() => handleRedeem(reward)}
               disabled={!canAfford || !!loading}
-              className={`px-4 py-2 rounded-xl text-sm font-semibold transition active:scale-95 ${
+              className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all active:scale-95 shrink-0 ${
                 canAfford && !loading
-                  ? 'bg-pink-500 text-white hover:bg-pink-600'
-                  : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                  ? 'bg-pink-500 text-white hover:bg-pink-600 shadow-sm shadow-pink-300/50'
+                  : 'bg-gray-100 text-gray-300 cursor-not-allowed'
               }`}
             >
-              {isLoading ? '...' : canAfford ? '兌換' : '不足'}
+              {isLoading ? '…' : canAfford ? '兌換' : '不足'}
             </button>
           </div>
         )

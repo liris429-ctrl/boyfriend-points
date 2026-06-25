@@ -126,8 +126,7 @@ export default async function DashboardPage() {
           <div className="relative">
             <p className="text-pink-100 text-xs font-medium tracking-widest uppercase mb-2">目前積分</p>
             <div className="text-7xl font-bold leading-none my-2 tabular-nums">{balance}</div>
-            <p className="text-pink-200 text-sm">⭐ 分</p>
-            <div className="flex justify-center gap-6 mt-5 text-xs text-pink-100">
+            <div className="flex justify-center gap-6 mt-4 text-xs text-pink-100">
               <div>
                 <div className="text-white font-semibold tabular-nums">{awarded}</div>
                 <div>累積獲得</div>
@@ -179,12 +178,12 @@ export default async function DashboardPage() {
 
         {/* Love note from admin */}
         {latestNote && (
-          <div className="bg-pink-50 border border-pink-200 rounded-2xl p-4 flex gap-3 items-start">
-            <span className="text-2xl mt-0.5">💌</span>
+          <div className="bg-gradient-to-br from-pink-50 via-rose-50 to-pink-50 rounded-2xl p-4 flex gap-3 items-start shadow-sm shadow-pink-200/60">
+            <span className="text-3xl leading-none mt-0.5">💌</span>
             <div className="min-w-0">
-              <p className="text-xs text-pink-400 font-medium mb-1">女友的留言</p>
-              <p className="text-sm text-pink-700 leading-relaxed">{latestNote.note}</p>
-              <p className="text-xs text-pink-300 mt-1">
+              <p className="text-xs font-semibold text-pink-500 tracking-wide uppercase mb-1.5">女友的留言</p>
+              <p className="text-sm text-pink-800 leading-relaxed">{latestNote.note}</p>
+              <p className="text-xs text-pink-300 mt-2">
                 {new Date(latestNote.created_at).toLocaleDateString('zh-TW', {
                   timeZone: 'Asia/Taipei', month: 'long', day: 'numeric',
                 })}
@@ -219,17 +218,17 @@ export default async function DashboardPage() {
             <p className="text-sm text-pink-500 font-medium">🎉 已達成全部里程碑！你真棒！</p>
           )}
 
-          <div className="flex gap-2 mt-3 flex-wrap">
+          <div className="flex gap-1.5 mt-3 flex-wrap">
             {MILESTONES.map((m) => (
               <div
                 key={m}
-                className={`flex items-center gap-1 text-xs px-2 py-1 rounded-full ${
+                className={`text-xs px-2.5 py-1 rounded-lg font-semibold tabular-nums ${
                   awarded >= m
-                    ? 'bg-pink-500 text-white'
-                    : 'bg-pink-50 text-pink-300 border border-pink-100'
+                    ? 'bg-pink-500 text-white shadow-sm shadow-pink-300/50'
+                    : 'bg-pink-50 text-pink-300'
                 }`}
               >
-                {awarded >= m ? '✅' : '⬜'} {m}
+                {m}
               </div>
             ))}
           </div>
@@ -239,31 +238,31 @@ export default async function DashboardPage() {
         <div className="grid grid-cols-2 gap-3">
           <a
             href="/rewards"
-            className="bg-white rounded-2xl p-4 shadow-sm shadow-pink-100 flex flex-col items-center gap-2 hover:shadow-md hover:shadow-pink-200/60 transition-all active:scale-95"
+            className="bg-rose-50 rounded-2xl p-4 flex flex-col items-center gap-2 hover:bg-rose-100 transition-all active:scale-95"
           >
             <span className="text-3xl">🎁</span>
-            <span className="text-sm font-medium text-pink-700">兌換獎勵</span>
+            <span className="text-sm font-semibold text-rose-600">兌換獎勵</span>
           </a>
           <a
             href="/history"
-            className="bg-white rounded-2xl p-4 shadow-sm shadow-pink-100 flex flex-col items-center gap-2 hover:shadow-md hover:shadow-pink-200/60 transition-all active:scale-95"
+            className="bg-amber-50 rounded-2xl p-4 flex flex-col items-center gap-2 hover:bg-amber-100 transition-all active:scale-95"
           >
             <span className="text-3xl">📋</span>
-            <span className="text-sm font-medium text-pink-700">積分紀錄</span>
+            <span className="text-sm font-semibold text-amber-600">積分紀錄</span>
           </a>
           <a
             href="/requests"
-            className="bg-white rounded-2xl p-4 shadow-sm shadow-pink-100 flex flex-col items-center gap-2 hover:shadow-md hover:shadow-pink-200/60 transition-all active:scale-95"
+            className="bg-sky-50 rounded-2xl p-4 flex flex-col items-center gap-2 hover:bg-sky-100 transition-all active:scale-95"
           >
             <span className="text-3xl">🙋</span>
-            <span className="text-sm font-medium text-pink-700">申請給點</span>
+            <span className="text-sm font-semibold text-sky-600">申請給點</span>
           </a>
           <a
             href="/wishes"
-            className="bg-white rounded-2xl p-4 shadow-sm shadow-pink-100 flex flex-col items-center gap-2 hover:shadow-md hover:shadow-pink-200/60 transition-all active:scale-95"
+            className="bg-violet-50 rounded-2xl p-4 flex flex-col items-center gap-2 hover:bg-violet-100 transition-all active:scale-95"
           >
             <span className="text-3xl">✨</span>
-            <span className="text-sm font-medium text-pink-700">許願獎勵</span>
+            <span className="text-sm font-semibold text-violet-600">許願獎勵</span>
           </a>
         </div>
 

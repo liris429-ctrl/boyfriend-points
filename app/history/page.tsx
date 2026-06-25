@@ -76,7 +76,7 @@ export default async function HistoryPage() {
                 return (
                   <div
                     key={`tx-${tx.id}`}
-                    className="bg-white rounded-2xl border border-pink-100 p-4 flex items-center gap-3"
+                    className="bg-white rounded-2xl p-4 flex items-center gap-3 shadow-sm shadow-pink-100/80 border-l-[3px] border-pink-300"
                   >
                     <div className="text-2xl">{tx.points < 0 ? '📉' : (tx.point_actions?.emoji ?? '⭐')}</div>
                     <div className="flex-1 min-w-0">
@@ -104,7 +104,7 @@ export default async function HistoryPage() {
                 return (
                   <div
                     key={`rd-${r.id}`}
-                    className="bg-white rounded-2xl border border-rose-100 p-4 flex items-center gap-3"
+                    className="bg-white rounded-2xl p-4 flex items-center gap-3 shadow-sm shadow-rose-100/80 border-l-[3px] border-rose-300"
                   >
                     <div className="text-2xl">{r.reward_emoji}</div>
                     <div className="flex-1 min-w-0">

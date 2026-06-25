@@ -153,13 +153,13 @@ export default function RequestPointsClient({ requests, userId }: Props) {
             {requests.map((req) => {
               const st = STATUS_LABEL[req.status] ?? STATUS_LABEL.pending
               return (
-                <div key={req.id} className="bg-white rounded-2xl border border-pink-100 p-4">
+                <div key={req.id} className="bg-white rounded-2xl p-4 shadow-sm shadow-pink-100/60 border-l-[3px] border-pink-200">
                   <div className="flex items-start gap-3">
                     <div className="text-2xl mt-0.5">🙋</div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
                         <p className="font-medium text-sm text-gray-700">{req.title}</p>
-                        <span className={`text-xs px-2 py-0.5 rounded-full border font-medium ${st.color}`}>
+                        <span className={`text-xs px-2 py-0.5 rounded-md font-semibold ${st.color}`}>
                           {st.label}
                         </span>
                       </div>
