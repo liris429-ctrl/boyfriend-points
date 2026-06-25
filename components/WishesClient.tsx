@@ -45,6 +45,16 @@ export default function WishesClient({ wishes, userId }: Props) {
       setErrorMsg(error.message)
       return
     }
+    fetch('/api/notify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        targetRole: 'admin',
+        title: '✨ 新的許願',
+        body: `${emoji.trim() || '✨'} ${title.trim()}`,
+        url: '/admin/review',
+      }),
+    })
     setSubmitted(true)
     setTitle('')
     setEmoji('')

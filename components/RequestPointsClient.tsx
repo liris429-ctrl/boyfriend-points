@@ -46,6 +46,16 @@ export default function RequestPointsClient({ requests, userId }: Props) {
       setErrorMsg(error.message)
       return
     }
+    fetch('/api/notify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        targetRole: 'admin',
+        title: '🙋 新的積分申請',
+        body: title.trim(),
+        url: '/admin/review',
+      }),
+    })
     setSubmitted(true)
     setTitle('')
     setPointsSuggested('')
