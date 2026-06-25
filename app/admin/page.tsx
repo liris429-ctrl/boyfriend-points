@@ -109,7 +109,7 @@ export default async function AdminPage() {
           </h2>
 
           {(!recentTx || recentTx.length === 0) ? (
-            <div className="bg-white rounded-2xl border border-pink-100 p-8 text-center text-pink-300">
+            <div className="bg-white rounded-2xl p-8 text-center text-pink-300 shadow-sm shadow-pink-100/60">
               <div className="text-4xl mb-2">🌸</div>
               <p className="text-sm">還沒有給分紀錄</p>
             </div>
@@ -118,7 +118,9 @@ export default async function AdminPage() {
               {(recentTx as unknown as PointTransaction[]).map((tx) => (
                 <div
                   key={tx.id}
-                  className="bg-white rounded-2xl border border-pink-100 p-3 flex items-center gap-3"
+                  className={`bg-white rounded-2xl p-3 flex items-center gap-3 shadow-sm border-l-[3px] ${
+                    tx.points >= 0 ? 'border-pink-300 shadow-pink-100/60' : 'border-rose-300 shadow-rose-100/60'
+                  }`}
                 >
                   <div className="text-xl">{tx.points < 0 ? '📉' : (tx.point_actions?.emoji ?? '⭐')}</div>
                   <div className="flex-1 min-w-0">

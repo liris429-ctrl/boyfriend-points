@@ -295,15 +295,15 @@ export default function AwardPointsForm({ actions, users, adminId, specialDates 
         </div>
       )}
 
-      <div className="bg-white rounded-2xl border border-pink-100 overflow-hidden">
+      <div className="bg-white rounded-2xl overflow-hidden shadow-sm shadow-pink-200/60">
         {/* Mode tabs */}
-        <div className="flex border-b border-pink-100">
+        <div className="flex p-1.5 gap-1.5 bg-pink-50/70">
           <button
             type="button"
             onClick={() => setMode('award')}
-            className={`flex-1 py-3 text-sm font-semibold transition ${
+            className={`flex-1 py-2.5 text-sm font-semibold rounded-xl transition-all ${
               mode === 'award'
-                ? 'text-pink-600 bg-pink-50 border-b-2 border-pink-500'
+                ? 'text-pink-600 bg-white shadow-sm'
                 : 'text-gray-400 hover:text-pink-400'
             }`}
           >
@@ -312,9 +312,9 @@ export default function AwardPointsForm({ actions, users, adminId, specialDates 
           <button
             type="button"
             onClick={() => setMode('deduct')}
-            className={`flex-1 py-3 text-sm font-semibold transition ${
+            className={`flex-1 py-2.5 text-sm font-semibold rounded-xl transition-all ${
               mode === 'deduct'
-                ? 'text-rose-600 bg-rose-50 border-b-2 border-rose-500'
+                ? 'text-rose-600 bg-white shadow-sm'
                 : 'text-gray-400 hover:text-rose-400'
             }`}
           >

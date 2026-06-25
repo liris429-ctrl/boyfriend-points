@@ -193,48 +193,48 @@ export default function AdminReviewClient({ requests, wishes, redemptions, admin
   return (
     <div className="space-y-5">
       {/* Tabs */}
-      <div className="flex bg-white rounded-2xl border border-pink-100 overflow-hidden">
+      <div className="flex bg-pink-50/80 rounded-2xl p-1.5 gap-1">
         <button
           onClick={() => setTab('requests')}
-          className={`flex-1 py-3 text-sm font-semibold transition flex items-center justify-center gap-1.5 ${
+          className={`flex-1 py-2.5 text-sm font-semibold rounded-xl transition-all flex items-center justify-center gap-1.5 ${
             tab === 'requests'
-              ? 'text-pink-600 bg-pink-50 border-b-2 border-pink-500'
+              ? 'text-pink-600 bg-white shadow-sm'
               : 'text-gray-400 hover:text-pink-400'
           }`}
         >
-          🙋 申請給點
+          🙋 申請
           {pendingRequests.length > 0 && (
-            <span className="bg-red-500 text-white text-[10px] font-bold rounded-full min-w-[16px] h-4 flex items-center justify-center px-1">
+            <span className="bg-pink-500 text-white text-[10px] font-bold rounded-md min-w-[16px] h-4 flex items-center justify-center px-1">
               {pendingRequests.length}
             </span>
           )}
         </button>
         <button
           onClick={() => setTab('wishes')}
-          className={`flex-1 py-3 text-sm font-semibold transition flex items-center justify-center gap-1.5 ${
+          className={`flex-1 py-2.5 text-sm font-semibold rounded-xl transition-all flex items-center justify-center gap-1.5 ${
             tab === 'wishes'
-              ? 'text-pink-600 bg-pink-50 border-b-2 border-pink-500'
+              ? 'text-pink-600 bg-white shadow-sm'
               : 'text-gray-400 hover:text-pink-400'
           }`}
         >
-          ✨ 許願獎勵
+          ✨ 許願
           {pendingWishes.length > 0 && (
-            <span className="bg-red-500 text-white text-[10px] font-bold rounded-full min-w-[16px] h-4 flex items-center justify-center px-1">
+            <span className="bg-pink-500 text-white text-[10px] font-bold rounded-md min-w-[16px] h-4 flex items-center justify-center px-1">
               {pendingWishes.length}
             </span>
           )}
         </button>
         <button
           onClick={() => setTab('redemptions')}
-          className={`flex-1 py-3 text-sm font-semibold transition flex items-center justify-center gap-1.5 ${
+          className={`flex-1 py-2.5 text-sm font-semibold rounded-xl transition-all flex items-center justify-center gap-1.5 ${
             tab === 'redemptions'
-              ? 'text-pink-600 bg-pink-50 border-b-2 border-pink-500'
+              ? 'text-pink-600 bg-white shadow-sm'
               : 'text-gray-400 hover:text-pink-400'
           }`}
         >
-          🎁 待兌現
+          🎁 兌現
           {unfulfilled.length > 0 && (
-            <span className="bg-red-500 text-white text-[10px] font-bold rounded-full min-w-[16px] h-4 flex items-center justify-center px-1">
+            <span className="bg-pink-500 text-white text-[10px] font-bold rounded-md min-w-[16px] h-4 flex items-center justify-center px-1">
               {unfulfilled.length}
             </span>
           )}
@@ -245,7 +245,7 @@ export default function AdminReviewClient({ requests, wishes, redemptions, admin
       {tab === 'requests' && (
         <div className="space-y-3">
           {requests.length === 0 ? (
-            <div className="bg-white rounded-2xl border border-pink-100 p-8 text-center text-pink-300">
+            <div className="bg-white rounded-2xl p-8 text-center text-pink-300 shadow-sm shadow-pink-100/60">
               <div className="text-4xl mb-2">🌸</div>
               <p className="text-sm">還沒有申請紀錄</p>
             </div>
@@ -254,15 +254,20 @@ export default function AdminReviewClient({ requests, wishes, redemptions, admin
               const st = STATUS_LABEL[req.status] ?? STATUS_LABEL.pending
               const edit = getRequestEdit(req.id)
               const isPending = req.status === 'pending'
+              const cardClass = isPending
+                ? 'bg-white rounded-2xl p-4 space-y-3 shadow-sm shadow-amber-100/60 border-l-[3px] border-amber-400'
+                : req.status === 'approved'
+                  ? 'bg-white/80 rounded-2xl p-4 space-y-3 shadow-sm border-l-[3px] border-green-300'
+                  : 'bg-white/60 rounded-2xl p-4 space-y-3 shadow-sm border-l-[3px] border-gray-200'
 
               return (
-                <div key={req.id} className="bg-white rounded-2xl border border-pink-100 p-4 space-y-3">
+                <div key={req.id} className={cardClass}>
                   <div className="flex items-start gap-3">
                     <div className="text-2xl">🙋</div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
                         <p className="font-medium text-sm text-gray-700">{req.title}</p>
-                        <span className={`text-xs px-2 py-0.5 rounded-full border font-medium ${st.color}`}>
+                        <span className={`text-xs px-2 py-0.5 rounded-md font-semibold ${st.color.replace(' border-amber-200', '').replace(' border-green-200', '').replace(' border-gray-200', '')}`}>
                           {st.label}
                         </span>
                       </div>
@@ -339,7 +344,7 @@ export default function AdminReviewClient({ requests, wishes, redemptions, admin
       {tab === 'wishes' && (
         <div className="space-y-3">
           {wishes.length === 0 ? (
-            <div className="bg-white rounded-2xl border border-pink-100 p-8 text-center text-pink-300">
+            <div className="bg-white rounded-2xl p-8 text-center text-pink-300 shadow-sm shadow-pink-100/60">
               <div className="text-4xl mb-2">🌸</div>
               <p className="text-sm">還沒有許願紀錄</p>
             </div>
@@ -348,15 +353,20 @@ export default function AdminReviewClient({ requests, wishes, redemptions, admin
               const st = STATUS_LABEL[wish.status] ?? STATUS_LABEL.pending
               const edit = getWishEdit(wish.id)
               const isPending = wish.status === 'pending'
+              const wishCardClass = isPending
+                ? 'bg-white rounded-2xl p-4 space-y-3 shadow-sm shadow-violet-100/60 border-l-[3px] border-violet-400'
+                : wish.status === 'approved'
+                  ? 'bg-white/80 rounded-2xl p-4 space-y-3 shadow-sm border-l-[3px] border-green-300'
+                  : 'bg-white/60 rounded-2xl p-4 space-y-3 shadow-sm border-l-[3px] border-gray-200'
 
               return (
-                <div key={wish.id} className="bg-white rounded-2xl border border-pink-100 p-4 space-y-3">
+                <div key={wish.id} className={wishCardClass}>
                   <div className="flex items-start gap-3">
                     <div className="text-2xl">{wish.emoji}</div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
                         <p className="font-medium text-sm text-gray-700">{wish.title}</p>
-                        <span className={`text-xs px-2 py-0.5 rounded-full border font-medium ${st.color}`}>
+                        <span className={`text-xs px-2 py-0.5 rounded-md font-semibold ${st.color.replace(' border-amber-200', '').replace(' border-green-200', '').replace(' border-gray-200', '')}`}>
                           {st.label}
                         </span>
                       </div>
@@ -435,13 +445,15 @@ export default function AdminReviewClient({ requests, wishes, redemptions, admin
       {tab === 'redemptions' && (
         <div className="space-y-3">
           {redemptions.length === 0 ? (
-            <div className="bg-white rounded-2xl border border-pink-100 p-8 text-center text-pink-300">
+            <div className="bg-white rounded-2xl p-8 text-center text-pink-300 shadow-sm shadow-pink-100/60">
               <div className="text-4xl mb-2">🎁</div>
               <p className="text-sm">還沒有兌換紀錄</p>
             </div>
           ) : (
             redemptions.map((rd) => (
-              <div key={rd.id} className="bg-white rounded-2xl border border-pink-100 p-4 flex items-center gap-3">
+              <div key={rd.id} className={`bg-white rounded-2xl p-4 flex items-center gap-3 shadow-sm ${
+                rd.fulfilled ? 'opacity-60 border-l-[3px] border-green-300' : 'shadow-rose-100/60 border-l-[3px] border-rose-400'
+              }`}>
                 <div className="text-2xl">{rd.reward_emoji}</div>
                 <div className="flex-1 min-w-0">
                   <p className="font-medium text-sm text-gray-700">{rd.reward_title}</p>

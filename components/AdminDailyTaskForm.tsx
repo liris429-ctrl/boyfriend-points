@@ -72,7 +72,7 @@ export default function AdminDailyTaskForm({ todayTask, adminId }: Props) {
 
   if (!editing && todayTask) {
     return (
-      <div className="bg-white rounded-2xl border border-amber-200 p-4">
+      <div className="bg-gradient-to-br from-amber-50 to-yellow-50 rounded-2xl p-4 shadow-sm shadow-amber-200/50">
         <div className="flex items-center justify-between mb-1">
           <span className="text-xs font-semibold text-amber-600">今日任務</span>
           <div className="flex gap-1.5">
@@ -103,7 +103,7 @@ export default function AdminDailyTaskForm({ todayTask, adminId }: Props) {
   }
 
   return (
-    <div className="bg-white rounded-2xl border border-amber-200 p-4 space-y-3">
+    <div className="bg-gradient-to-br from-amber-50 to-yellow-50 rounded-2xl p-4 space-y-3 shadow-sm shadow-amber-200/50">
       <h3 className="font-semibold text-amber-700 text-sm">
         {todayTask ? '編輯今日任務' : '設定今日任務'}
       </h3>
@@ -114,8 +114,8 @@ export default function AdminDailyTaskForm({ todayTask, adminId }: Props) {
             key={e}
             type="button"
             onClick={() => setEmoji(e)}
-            className={`text-xl p-1.5 rounded-lg border-2 transition ${
-              emoji === e ? 'border-amber-400 bg-amber-50' : 'border-transparent hover:border-amber-200'
+            className={`text-xl p-1.5 rounded-lg border-2 transition-all ${
+              emoji === e ? 'border-amber-400 bg-white shadow-sm' : 'border-transparent hover:border-amber-200 hover:bg-white/60'
             }`}
           >
             {e}
