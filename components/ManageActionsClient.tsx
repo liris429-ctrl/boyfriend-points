@@ -5,7 +5,12 @@ import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import type { PointAction } from '@/lib/types'
 
-const EMOJI_OPTIONS = ['⭐', '🧹', '🍳', '💬', '🎬', '🎁', '📱', '💆', '🌹', '🚗', '🛒', '❤️', '🐾', '🌸', '✨', '🏃', '📚', '🎵']
+const EMOJI_OPTIONS = [
+  '⭐', '🧹', '🍳', '💬', '🎬', '🎁', '📱', '💆', '🌹', '🚗', '🛒', '❤️', '🐾', '🌸', '✨',
+  '🏃', '📚', '🎵', '🫧', '🌙', '☕', '🍜', '🍱', '🎂', '🧸', '💪', '🚿', '🛏️', '🪴', '🐕',
+  '🎮', '🎯', '🛵', '🏋️', '🤸', '🧘', '🚴', '🌅', '🌃', '🎤', '💌', '🤝', '🫶', '😊', '🥰',
+  '🍰', '🍕', '🥗', '🛍️', '🎪', '📸', '🎨', '🎭', '🎹', '🎸', '🌿', '🪷', '🦋', '🍓', '🧁',
+]
 
 interface Props {
   initialActions: PointAction[]

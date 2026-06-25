@@ -28,7 +28,9 @@ export default async function MarqueeBar() {
   const autoItems: string[] = []
   for (const tx of recentTx ?? []) {
     const action = (tx.point_actions as unknown) as { title: string; emoji: string } | null
-    autoItems.push(`${action?.emoji ?? '⭐'} +${tx.points} 分！${action?.title ?? ''}`)
+    const label = action?.title ?? tx.note ?? ''
+    const emoji = action?.emoji ?? (tx.note?.match(/^\p{Emoji}/u)?.[0] ?? '⭐')
+    autoItems.push(`${emoji} +${tx.points} 分${label ? `・${label}` : ''}`)
   }
   for (const rd of recentRd ?? []) {
     autoItems.push(`${rd.reward_emoji} 兌換了${rd.reward_title}！`)

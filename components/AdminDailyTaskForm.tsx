@@ -5,7 +5,11 @@ import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import type { DailyTask } from '@/lib/types'
 
-const EMOJI_OPTIONS = ['📋', '🧹', '🍳', '💬', '📱', '🛒', '💆', '🚶', '🎬', '📚', '🌅', '💪', '🌹', '☕', '🤝']
+const EMOJI_OPTIONS = [
+  '📋', '🧹', '🍳', '💬', '📱', '🛒', '💆', '🚶', '🎬', '📚', '🌅', '💪', '🌹', '☕', '🤝',
+  '🫧', '🌙', '🍜', '🍱', '🎂', '🧸', '🚿', '🛏️', '🪴', '🐕', '🎮', '🎯', '🏋️', '🤸', '🧘',
+  '🚴', '🌃', '🎤', '💌', '🫶', '😊', '🥰', '🍰', '🍕', '🥗', '🛍️', '🎪', '📸', '🎨', '🌿',
+]
 
 interface Props {
   todayTask: DailyTask | null
