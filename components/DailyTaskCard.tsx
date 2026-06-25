@@ -8,11 +8,19 @@ interface Props {
   task: DailyTask
   userId: string
   alreadyRequested?: boolean
+  alreadyApproved?: boolean
 }
 
-export default function DailyTaskCard({ task, userId, alreadyRequested = false }: Props) {
+export default function DailyTaskCard({ task, userId, alreadyRequested = false, alreadyApproved = false }: Props) {
   const supabase = createClient()
-  const [status, setStatus] = useState<'idle' | 'loading' | 'done'>(alreadyRequested ? 'done' : 'idle')
+
+  function initStatus() {
+    if (alreadyApproved) return 'approved'
+    if (alreadyRequested) return 'done'
+    return 'idle'
+  }
+
+  const [status, setStatus] = useState<'idle' | 'loading' | 'done' | 'approved'>(initStatus())
   const [error, setError] = useState<string | null>(null)
 
   async function handleComplete() {
@@ -34,11 +42,15 @@ export default function DailyTaskCard({ task, userId, alreadyRequested = false }
     }
   }
 
+  const isDone = status === 'done' || status === 'approved'
+
   return (
     <div className={`rounded-2xl p-4 transition-all ${
-      status === 'done'
+      status === 'approved'
         ? 'bg-gradient-to-br from-green-50 to-emerald-50 shadow-sm shadow-green-200/60'
-        : 'bg-gradient-to-br from-amber-50 to-yellow-50 shadow-sm shadow-amber-200/60'
+        : isDone
+          ? 'bg-gradient-to-br from-teal-50 to-cyan-50 shadow-sm shadow-teal-200/60'
+          : 'bg-gradient-to-br from-amber-50 to-yellow-50 shadow-sm shadow-amber-200/60'
     }`}>
       <div className="flex items-center gap-1.5 mb-2">
         <span className="text-xs font-semibold text-amber-600 tracking-wide uppercase">
@@ -53,9 +65,13 @@ export default function DailyTaskCard({ task, userId, alreadyRequested = false }
           <p className="text-xs text-amber-600 tabular-nums">完成可獲得 +{task.points} 分</p>
         </div>
 
-        {status === 'done' ? (
+        {status === 'approved' ? (
           <div className="text-xs text-green-700 font-semibold bg-green-100 px-3 py-1.5 rounded-lg">
-            已申請 ✅
+            已完成 ✅
+          </div>
+        ) : status === 'done' ? (
+          <div className="text-xs text-teal-700 font-semibold bg-teal-100 px-3 py-1.5 rounded-lg">
+            審核中…
           </div>
         ) : (
           <button

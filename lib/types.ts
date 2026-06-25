@@ -18,6 +18,7 @@ export interface Reward {
   id: string
   title: string
   emoji: string
+  description: string | null
   points_required: number
   active: boolean
   expires_at: string | null

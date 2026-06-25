@@ -18,12 +18,12 @@ export default function ManageRewardsClient({ initialRewards }: Props) {
   const [rewards, setRewards] = useState(initialRewards)
   const [showForm, setShowForm] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
-  const [form, setForm] = useState({ title: '', emoji: '🎁', points_required: 50, expires_at: '' })
+  const [form, setForm] = useState({ title: '', emoji: '🎁', description: '', points_required: 50, expires_at: '' })
   const [loading, setLoading] = useState(false)
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null)
 
   function startAdd() {
-    setForm({ title: '', emoji: '🎁', points_required: 50, expires_at: '' })
+    setForm({ title: '', emoji: '🎁', description: '', points_required: 50, expires_at: '' })
     setEditingId(null)
     setShowForm(true)
   }
@@ -32,6 +32,7 @@ export default function ManageRewardsClient({ initialRewards }: Props) {
     setForm({
       title: reward.title,
       emoji: reward.emoji,
+      description: reward.description ?? '',
       points_required: reward.points_required,
       expires_at: reward.expires_at ? reward.expires_at.slice(0, 16) : '',
     })
@@ -46,6 +47,7 @@ export default function ManageRewardsClient({ initialRewards }: Props) {
     const payload = {
       title: form.title,
       emoji: form.emoji,
+      description: form.description.trim() || null,
       points_required: form.points_required,
       expires_at: form.expires_at ? new Date(form.expires_at).toISOString() : null,
     }
@@ -89,19 +91,21 @@ export default function ManageRewardsClient({ initialRewards }: Props) {
 
           <div>
             <label className="text-xs text-pink-600 mb-1 block">Emoji</label>
-            <div className="flex flex-wrap gap-1.5">
-              {EMOJI_OPTIONS.map((e) => (
-                <button
-                  key={e}
-                  type="button"
-                  onClick={() => setForm({ ...form, emoji: e })}
-                  className={`text-xl p-1.5 rounded-lg border-2 transition ${
-                    form.emoji === e ? 'border-pink-400 bg-pink-50' : 'border-transparent hover:border-pink-200'
-                  }`}
-                >
-                  {e}
-                </button>
-              ))}
+            <div className="h-28 overflow-y-auto rounded-xl bg-pink-50/50 p-1.5">
+              <div className="flex flex-wrap gap-1">
+                {EMOJI_OPTIONS.map((e) => (
+                  <button
+                    key={e}
+                    type="button"
+                    onClick={() => setForm({ ...form, emoji: e })}
+                    className={`text-xl p-1.5 rounded-lg border-2 transition ${
+                      form.emoji === e ? 'border-pink-400 bg-white shadow-sm' : 'border-transparent hover:border-pink-200'
+                    }`}
+                  >
+                    {e}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
 
@@ -124,6 +128,18 @@ export default function ManageRewardsClient({ initialRewards }: Props) {
               value={form.points_required}
               onChange={(e) => setForm({ ...form, points_required: parseInt(e.target.value) || 1 })}
               className="w-full px-3 py-2 rounded-xl border border-pink-200 text-sm focus:outline-none focus:border-pink-400"
+            />
+          </div>
+
+          <div>
+            <label className="text-xs text-pink-600 mb-1 block">說明（選填）</label>
+            <input
+              type="text"
+              value={form.description}
+              onChange={(e) => setForm({ ...form, description: e.target.value })}
+              maxLength={80}
+              className="w-full px-3 py-2 rounded-xl border border-pink-200 text-sm focus:outline-none focus:border-pink-400"
+              placeholder="例：一起去吃燒肉，隨便點"
             />
           </div>
 
@@ -173,6 +189,9 @@ export default function ManageRewardsClient({ initialRewards }: Props) {
             <span className="text-2xl">{reward.emoji}</span>
             <div className="flex-1 min-w-0">
               <p className="font-medium text-sm text-gray-700">{reward.title}</p>
+              {reward.description && (
+                <p className="text-xs text-gray-400 truncate">{reward.description}</p>
+              )}
               <p className="text-xs text-pink-500">{reward.points_required} 分</p>
               {reward.expires_at && (
                 <p className="text-xs text-orange-400">

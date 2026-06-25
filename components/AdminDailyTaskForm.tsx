@@ -112,19 +112,21 @@ export default function AdminDailyTaskForm({ todayTask, adminId }: Props) {
         {todayTask ? '編輯今日任務' : '設定今日任務'}
       </h3>
 
-      <div className="flex flex-wrap gap-1.5">
-        {EMOJI_OPTIONS.map((e) => (
-          <button
-            key={e}
-            type="button"
-            onClick={() => setEmoji(e)}
-            className={`text-xl p-1.5 rounded-lg border-2 transition-all ${
-              emoji === e ? 'border-amber-400 bg-white shadow-sm' : 'border-transparent hover:border-amber-200 hover:bg-white/60'
-            }`}
-          >
-            {e}
-          </button>
-        ))}
+      <div className="h-28 overflow-y-auto rounded-xl bg-white/50 p-1.5">
+        <div className="flex flex-wrap gap-1">
+          {EMOJI_OPTIONS.map((e) => (
+            <button
+              key={e}
+              type="button"
+              onClick={() => setEmoji(e)}
+              className={`text-xl p-1.5 rounded-lg border-2 transition-all ${
+                emoji === e ? 'border-amber-400 bg-white shadow-sm' : 'border-transparent hover:border-amber-200 hover:bg-white/60'
+              }`}
+            >
+              {e}
+            </button>
+          ))}
+        </div>
       </div>
 
       <div className="grid grid-cols-[1fr_5rem] gap-2">

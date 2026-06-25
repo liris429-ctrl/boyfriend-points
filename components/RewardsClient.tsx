@@ -166,6 +166,9 @@ export default function RewardsClient({ rewards, balance, userId, displayName }:
             <div className={`text-3xl ${!canAfford ? 'opacity-50' : ''}`}>{reward.emoji}</div>
             <div className="flex-1 min-w-0">
               <p className={`font-semibold ${canAfford ? 'text-gray-800' : 'text-gray-400'}`}>{reward.title}</p>
+              {reward.description && (
+                <p className={`text-xs mt-0.5 leading-relaxed ${canAfford ? 'text-gray-500' : 'text-gray-300'}`}>{reward.description}</p>
+              )}
               <div className="flex items-center gap-1 mt-0.5">
                 <span className={`text-sm font-semibold tabular-nums ${canAfford ? 'text-pink-500' : 'text-gray-400'}`}>
                   {reward.points_required}

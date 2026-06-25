@@ -91,19 +91,21 @@ export default function ManageActionsClient({ initialActions }: Props) {
 
           <div>
             <label className="text-xs text-pink-600 mb-1 block">Emoji</label>
-            <div className="flex flex-wrap gap-1.5">
-              {EMOJI_OPTIONS.map((e) => (
-                <button
-                  key={e}
-                  type="button"
-                  onClick={() => setForm({ ...form, emoji: e })}
-                  className={`text-xl p-1.5 rounded-lg border-2 transition ${
-                    form.emoji === e ? 'border-pink-400 bg-pink-50' : 'border-transparent hover:border-pink-200'
-                  }`}
-                >
-                  {e}
-                </button>
-              ))}
+            <div className="h-28 overflow-y-auto rounded-xl bg-pink-50/50 p-1.5">
+              <div className="flex flex-wrap gap-1">
+                {EMOJI_OPTIONS.map((e) => (
+                  <button
+                    key={e}
+                    type="button"
+                    onClick={() => setForm({ ...form, emoji: e })}
+                    className={`text-xl p-1.5 rounded-lg border-2 transition ${
+                      form.emoji === e ? 'border-pink-400 bg-white shadow-sm' : 'border-transparent hover:border-pink-200'
+                    }`}
+                  >
+                    {e}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
 

@@ -62,15 +62,17 @@ export default async function DashboardPage() {
 
   // Check if user already submitted today's task
   let taskAlreadyRequested = false
+  let taskApproved = false
   if (todayTask) {
     const { data: existingReq } = await supabase
       .from('point_requests')
-      .select('id')
+      .select('id, status')
       .eq('user_id', user.id)
       .eq('title', `完成每日任務：${todayTask.title}`)
       .gte('created_at', `${today}T00:00:00`)
       .limit(1)
     taskAlreadyRequested = (existingReq ?? []).length > 0
+    taskApproved = existingReq?.[0]?.status === 'approved'
   }
 
   // Check if today is a special date
@@ -174,7 +176,7 @@ export default async function DashboardPage() {
         )}
 
         {/* Today's daily task */}
-        {todayTask && <DailyTaskCard task={todayTask} userId={user.id} alreadyRequested={taskAlreadyRequested} />}
+        {todayTask && <DailyTaskCard task={todayTask} userId={user.id} alreadyRequested={taskAlreadyRequested} alreadyApproved={taskApproved} />}
 
         {/* Love note from admin */}
         {latestNote && (
