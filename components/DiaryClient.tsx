@@ -120,12 +120,15 @@ export default function DiaryClient({ entries: initial, userId, userRole }: Prop
     }
     if (data) {
       const otherRole = userRole === 'admin' ? 'user' : 'admin'
+      const diaryTitle = userRole === 'admin'
+        ? '女友偷偷寫了新日記 📔'
+        : '男友悄悄寫了新日記 ✍️'
       fetch('/api/notify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           targetRole: otherRole,
-          title: '有人悄悄寫了新日記 ✍️',
+          title: diaryTitle,
           body: content.trim().slice(0, 60),
           url: '/diary',
         }),
@@ -172,12 +175,15 @@ export default function DiaryClient({ entries: initial, userId, userRole }: Prop
     if (err || !data) return
 
     const otherRole = userRole === 'admin' ? 'user' : 'admin'
+    const commentTitle = userRole === 'admin'
+      ? '女友在日記留言了 💬'
+      : '男友在日記留言了 💬'
     fetch('/api/notify', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         targetRole: otherRole,
-        title: '叮咚！日記有新留言 💬',
+        title: commentTitle,
         body: text.slice(0, 60),
         url: '/diary',
       }),

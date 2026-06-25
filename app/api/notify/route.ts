@@ -2,8 +2,8 @@ import webpush from 'web-push'
 import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 
-const vapidSubject = process.env.NEXT_PUBLIC_VERCEL_URL
-  ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`
+const vapidSubject = process.env.VERCEL_URL
+  ? `https://${process.env.VERCEL_URL}`
   : process.env.VAPID_EMAIL!
 
 webpush.setVapidDetails(
