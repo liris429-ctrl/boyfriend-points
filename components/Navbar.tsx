@@ -4,14 +4,18 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { useState, useRef, useEffect } from 'react'
+import dynamic from 'next/dynamic'
+
+const PushSubscriber = dynamic(() => import('./PushSubscriber'), { ssr: false })
 
 interface NavbarProps {
   role: 'admin' | 'user'
   displayName: string
+  userId: string
   pendingCount?: number
 }
 
-export default function Navbar({ role, displayName, pendingCount }: NavbarProps) {
+export default function Navbar({ role, displayName, userId, pendingCount }: NavbarProps) {
   const pathname = usePathname()
   const router = useRouter()
   const supabase = createClient()
@@ -52,6 +56,7 @@ export default function Navbar({ role, displayName, pendingCount }: NavbarProps)
             </span>
             <div className="flex items-center gap-3">
               <span className="text-xs text-pink-300">💙 {displayName}</span>
+              <PushSubscriber userId={userId} />
               <button
                 onClick={handleSignOut}
                 className="text-xs text-gray-400 hover:text-red-400 transition"
@@ -183,8 +188,9 @@ export default function Navbar({ role, displayName, pendingCount }: NavbarProps)
           </div>
         </div>
 
-        <div className="pb-1 -mt-1 text-xs text-pink-300 text-right">
-          👑 管理員 {displayName}
+        <div className="pb-1 -mt-1 text-xs text-pink-300 flex items-center justify-end gap-2">
+          <span>👑 管理員 {displayName}</span>
+          <PushSubscriber userId={userId} />
         </div>
       </div>
     </nav>

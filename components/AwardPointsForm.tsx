@@ -84,11 +84,23 @@ export default function AwardPointsForm({ actions, users, adminId, specialDates 
       })
       setLoading(false)
       if (!error) {
+        const emoji = customEmoji.trim() || '⭐'
+        const title = customTitle.trim()
+        fetch('/api/notify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            targetUserId: selectedUserId,
+            title: `💕 獲得 +${finalPoints} 積分！`,
+            body: `${emoji} ${title}`,
+            url: '/',
+          }),
+        })
         setShareResult({
           userName: selectedUser?.display_name ?? '男友',
           points: finalPoints,
-          actionEmoji: customEmoji.trim() || '⭐',
-          actionTitle: customTitle.trim(),
+          actionEmoji: emoji,
+          actionTitle: title,
           message: '',
         })
         setCustomTitle('')
@@ -116,6 +128,16 @@ export default function AwardPointsForm({ actions, users, adminId, specialDates 
 
     setLoading(false)
     if (!error) {
+      fetch('/api/notify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          targetUserId: selectedUserId,
+          title: `💕 獲得 +${finalPoints} 積分！`,
+          body: `${selectedAction.emoji} ${selectedAction.title}`,
+          url: '/',
+        }),
+      })
       setShareResult({
         userName: selectedUser?.display_name ?? '男友',
         points: finalPoints,
@@ -145,6 +167,16 @@ export default function AwardPointsForm({ actions, users, adminId, specialDates 
 
     setLoading(false)
     if (!error) {
+      fetch('/api/notify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          targetUserId: selectedUserId,
+          title: `📉 被扣了 ${amount} 積分`,
+          body: deductReason.trim(),
+          url: '/',
+        }),
+      })
       setDeductResult({
         userName: selectedUser?.display_name ?? '男友',
         amount,

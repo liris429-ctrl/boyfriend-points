@@ -54,7 +54,7 @@ export default async function HistoryPage() {
 
   return (
     <div className="min-h-dvh flex flex-col">
-      <Navbar role={profile.role} displayName={profile.display_name} />
+      <Navbar role={profile.role} displayName={profile.display_name} userId={user.id} />
 
       <main className="flex-1 max-w-lg mx-auto w-full p-4 pb-24 space-y-5">
         <div className="mt-2">

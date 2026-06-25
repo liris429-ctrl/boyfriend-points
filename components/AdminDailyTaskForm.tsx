@@ -45,6 +45,16 @@ export default function AdminDailyTaskForm({ todayTask, adminId }: Props) {
 
     setLoading(false)
     setEditing(false)
+    fetch('/api/notify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        targetRole: 'user',
+        title: '📋 今日任務出爐！',
+        body: `${emoji} ${title.trim()} (+${points}分)`,
+        url: '/',
+      }),
+    })
     router.refresh()
   }
 

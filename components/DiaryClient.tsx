@@ -119,6 +119,17 @@ export default function DiaryClient({ entries: initial, userId, userRole }: Prop
       return
     }
     if (data) {
+      const otherRole = userRole === 'admin' ? 'user' : 'admin'
+      fetch('/api/notify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          targetRole: otherRole,
+          title: '📔 新的日記！',
+          body: content.trim().slice(0, 60),
+          url: '/diary',
+        }),
+      })
       setEntries([data as DiaryEntry, ...entries])
       setCommentsByEntry(prev => ({ ...prev, [data.id]: [] }))
       closeForm()
@@ -160,6 +171,17 @@ export default function DiaryClient({ entries: initial, userId, userRole }: Prop
     setSubmittingCommentId(null)
     if (err || !data) return
 
+    const otherRole = userRole === 'admin' ? 'user' : 'admin'
+    fetch('/api/notify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        targetRole: otherRole,
+        title: '💬 新留言',
+        body: text.slice(0, 60),
+        url: '/diary',
+      }),
+    })
     setCommentsByEntry(prev => ({
       ...prev,
       [entryId]: [...(prev[entryId] ?? []), data as DiaryComment],

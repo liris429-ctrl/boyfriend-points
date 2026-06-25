@@ -36,6 +36,7 @@ export default async function SpecialDatesPage() {
       <Navbar
         role={profile.role}
         displayName={profile.display_name}
+        userId={user.id}
         pendingCount={(pendingCount ?? 0) + (pendingWishCount ?? 0)}
       />
 
