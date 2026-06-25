@@ -91,8 +91,8 @@ export default function AwardPointsForm({ actions, users, adminId, specialDates 
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             targetUserId: selectedUserId,
-            title: `💕 獲得 +${finalPoints} 積分！`,
-            body: `${emoji} ${title}`,
+            title: `天哪，獲得 +${finalPoints} 分！`,
+            body: title,
             url: '/',
           }),
         })
@@ -133,8 +133,8 @@ export default function AwardPointsForm({ actions, users, adminId, specialDates 
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           targetUserId: selectedUserId,
-          title: `💕 獲得 +${finalPoints} 積分！`,
-          body: `${selectedAction.emoji} ${selectedAction.title}`,
+          title: `天哪，獲得 +${finalPoints} 分！`,
+          body: selectedAction.title,
           url: '/',
         }),
       })
@@ -172,7 +172,7 @@ export default function AwardPointsForm({ actions, users, adminId, specialDates 
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           targetUserId: selectedUserId,
-          title: `📉 被扣了 ${amount} 積分`,
+          title: `嗶嗶！公權力介入，被扣了 ${amount} 分`,
           body: deductReason.trim(),
           url: '/',
         }),

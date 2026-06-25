@@ -125,7 +125,7 @@ export default function DiaryClient({ entries: initial, userId, userRole }: Prop
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           targetRole: otherRole,
-          title: '📔 新的日記！',
+          title: '有人悄悄寫了新日記 ✍️',
           body: content.trim().slice(0, 60),
           url: '/diary',
         }),
@@ -177,7 +177,7 @@ export default function DiaryClient({ entries: initial, userId, userRole }: Prop
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         targetRole: otherRole,
-        title: '💬 新留言',
+        title: '叮咚！日記有新留言 💬',
         body: text.slice(0, 60),
         url: '/diary',
       }),

@@ -50,7 +50,7 @@ export default function WishesClient({ wishes, userId }: Props) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         targetRole: 'admin',
-        title: '✨ 新的許願',
+        title: '✨ 有新的許願誕生了！',
         body: `${emoji.trim() || '✨'} ${title.trim()}`,
         url: '/admin/review',
       }),

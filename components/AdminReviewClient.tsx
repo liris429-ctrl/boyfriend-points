@@ -72,7 +72,7 @@ export default function AdminReviewClient({ requests, wishes, redemptions, admin
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           targetUserId: req.user_id,
-          title: '✅ 積分申請核准！',
+          title: '🎉 撒花～積分申請通過了',
           body: `+${pts}分 ${req.title}${edit.reply.trim() ? `・${edit.reply.trim()}` : ''}`,
           url: '/',
         }),
@@ -98,7 +98,7 @@ export default function AdminReviewClient({ requests, wishes, redemptions, admin
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         targetUserId: req.user_id,
-        title: '❌ 積分申請未通過',
+        title: '駁回！你的申請被無情退件 ❌',
         body: `${req.title}${edit.reply.trim() ? `・${edit.reply.trim()}` : ''}`,
         url: '/requests',
       }),
@@ -133,7 +133,7 @@ export default function AdminReviewClient({ requests, wishes, redemptions, admin
         body: JSON.stringify({
           targetUserId: wish.user_id,
           title: '✅ 許願核准！',
-          body: `${edit.emoji.trim() || wish.emoji} ${wish.title} 已加入獎勵`,
+          body: `${wish.title} 已加入獎勵`,
           url: '/rewards',
         }),
       })
@@ -157,7 +157,7 @@ export default function AdminReviewClient({ requests, wishes, redemptions, admin
       body: JSON.stringify({
         targetUserId: wish.user_id,
         title: '❌ 許願未通過',
-        body: `${wish.emoji} ${wish.title}${edit.reply.trim() ? `・${edit.reply.trim()}` : ''}`,
+        body: edit.reply.trim() || wish.title,
         url: '/wishes',
       }),
     })
@@ -177,8 +177,8 @@ export default function AdminReviewClient({ requests, wishes, redemptions, admin
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         targetUserId: redemption.user_id,
-        title: '🎁 獎勵已兌現！',
-        body: `${redemption.reward_emoji} ${redemption.reward_title}`,
+        title: '叮咚！獎勵已成功兌現 🎁',
+        body: `恭喜獲得「${redemption.reward_title}」，好好享受你的獎勵吧！`,
         url: '/history',
       }),
     })

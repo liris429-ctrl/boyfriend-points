@@ -50,8 +50,8 @@ export default function AdminDailyTaskForm({ todayTask, adminId }: Props) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         targetRole: 'user',
-        title: '📋 今日任務出爐！',
-        body: `${emoji} ${title.trim()} (+${points}分)`,
+        title: '營業時間到，今日任務已出爐📋',
+        body: `${title.trim()} (+${points}分)，請手刀前往！`,
         url: '/',
       }),
     })

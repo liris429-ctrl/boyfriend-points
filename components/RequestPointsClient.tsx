@@ -51,7 +51,7 @@ export default function RequestPointsClient({ requests, userId }: Props) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         targetRole: 'admin',
-        title: '🙋 新的積分申請',
+        title: '🙋 那個男人帶著他的積分申請走來了！',
         body: title.trim(),
         url: '/admin/review',
       }),
