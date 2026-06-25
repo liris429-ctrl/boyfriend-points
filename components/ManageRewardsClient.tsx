@@ -108,26 +108,30 @@ function RewardForm({
       <div>
         <label className="text-xs text-pink-600 mb-1 block">限時到期（選填）</label>
         <div className="grid grid-cols-2 gap-2">
-          <input
-            type="date"
-            value={form.expires_at.slice(0, 10)}
-            onChange={(e) => {
-              const date = e.target.value
-              const time = form.expires_at.slice(11) || '23:59'
-              setForm({ ...form, expires_at: date ? `${date}T${time}` : '' })
-            }}
-            className="w-full px-3 py-2 rounded-xl border border-pink-200 text-sm focus:outline-none focus:border-pink-400"
-          />
-          <input
-            type="time"
-            value={form.expires_at.slice(11) || ''}
-            disabled={!form.expires_at.slice(0, 10)}
-            onChange={(e) => {
-              const date = form.expires_at.slice(0, 10)
-              setForm({ ...form, expires_at: date ? `${date}T${e.target.value}` : '' })
-            }}
-            className="w-full px-3 py-2 rounded-xl border border-pink-200 text-sm focus:outline-none focus:border-pink-400 disabled:opacity-40"
-          />
+          <div className="min-w-0 overflow-hidden">
+            <input
+              type="date"
+              value={form.expires_at.slice(0, 10)}
+              onChange={(e) => {
+                const date = e.target.value
+                const time = form.expires_at.slice(11) || '23:59'
+                setForm({ ...form, expires_at: date ? `${date}T${time}` : '' })
+              }}
+              className="w-full px-3 py-2 rounded-xl border border-pink-200 text-sm focus:outline-none focus:border-pink-400"
+            />
+          </div>
+          <div className="min-w-0 overflow-hidden">
+            <input
+              type="time"
+              value={form.expires_at.slice(11) || ''}
+              disabled={!form.expires_at.slice(0, 10)}
+              onChange={(e) => {
+                const date = form.expires_at.slice(0, 10)
+                setForm({ ...form, expires_at: date ? `${date}T${e.target.value}` : '' })
+              }}
+              className="w-full px-3 py-2 rounded-xl border border-pink-200 text-sm focus:outline-none focus:border-pink-400 disabled:opacity-40"
+            />
+          </div>
         </div>
       </div>
 
